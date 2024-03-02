@@ -8,7 +8,7 @@ public class GpuDiffEqSystemSolver : IDisposable{
     private Context context;
     private Accelerator accelerator;
     private int size;
-    private KernelType loadedKernel;
+    private Lazy<KernelType> loadedKernel;
     /// <param name="derivatives">A list of derivatives definitions</param>
     /// <param name="derivativeMethod">Some of <see cref="DerivativeMethod"/> </param>
     public GpuDiffEqSystemSolver(string[] derivatives, string derivativeMethod)
@@ -48,10 +48,16 @@ public class GpuDiffEqSystemSolver : IDisposable{
             }
         }
         """;
-        loadedKernel = DynamicCompilation.CompileFunction<Accelerator, KernelType>(
+        loadedKernel = new( ()=> DynamicCompilation.CompileFunction<Accelerator, KernelType>(
             code,
             typeof(Index1D), typeof(ArrayView<int>), typeof(KernelLoaders))
-        (accelerator);
+        (accelerator));
+    }
+    /// <summary>
+    /// Precompiles kernel
+    /// </summary>
+    public void CompileKernel(){
+        var _ = loadedKernel.Value;
     }
     public void Dispose()
     {
@@ -60,6 +66,7 @@ public class GpuDiffEqSystemSolver : IDisposable{
     }
     public IEnumerable<(float[] Values, float Time)> EnumerateSolutions(float[] initialValues, float dt, float t0)
     {
+        var kernel = loadedKernel.Value;
         //previous values of x,y,z...
         var P = accelerator.Allocate1D<float>(size);
         P.CopyFromCPU(initialValues);
@@ -69,7 +76,7 @@ public class GpuDiffEqSystemSolver : IDisposable{
         for (int i = 0; ; i++)
         {
             var t = t0 + i * dt;
-            loadedKernel((Index1D)size, t, dt, P.View, V.View);
+            kernel((Index1D)size, t, dt, P.View, V.View);
             accelerator.Synchronize();
             yield return (V.GetAsArray1D(), t);
             (P, V) = (V, P);

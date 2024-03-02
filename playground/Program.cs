@@ -23,6 +23,8 @@ float[] initialValues = [1,2,3];
 // DerivativeMethod.RungeKutta methods to compute derivatives
 using var solver = new GpuDiffEqSystemSolver(derivatives,DerivativeMethod.RungeKutta);
 
+solver.CompileKernel();
+
 var solutions = solver.EnumerateSolutions(initialValues,dt,t0);
 solutions.First();//initialize 
 
