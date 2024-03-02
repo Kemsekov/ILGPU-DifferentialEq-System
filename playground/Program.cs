@@ -19,8 +19,11 @@ string[] derivatives = [
 float[] initialValues = [1,2,3];
 
 
-//use ILGPU_Derivative.Euler,ILGPU_Derivative.ImprovedEuler or ILGPU_Derivative.RungeKuttaMethod methods to compute derivatives
-var solutions = ILGPU_Derivative.Derivative(derivatives,initialValues,dt,t0,ILGPU_Derivative.RungeKuttaMethod);
+// use DerivativeMethod.Euler,DerivativeMethod.ImprovedEuler or 
+// DerivativeMethod.RungeKutta methods to compute derivatives
+using var solver = new GpuDiffEqSystemSolver(derivatives,DerivativeMethod.RungeKutta);
+
+var solutions = solver.EnumerateSolutions(initialValues,dt,t0);
 solutions.First();//initialize 
 
 var timer = new Stopwatch();
