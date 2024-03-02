@@ -8,6 +8,14 @@ public class ILGPU_Derivative
 {
 
     public const string Euler = "newV[i] = prev[i] + dt * f_<i>(t,prev);";
+    public const string ImprovedEuler = 
+    """
+    tmp3=prev[i];
+    tmp1=f_<i>(t,prev);
+    prev[i]=tmp3 + dt * tmp1;
+    newV[i]=tmp3+0.5f*dt*(tmp1+f_<i>(t+dt,prev));
+    prev[i]=tmp3;
+    """;
     public const string RungeKuttaMethod = 
     """
         tmp1=dt/2;

@@ -20,7 +20,7 @@ float[] initialValues = [1,2,3];
 
 
 //use ILGPU_Derivative.Euler or ILGPU_Derivative.RungeKuttaMethod methods to compute derivatives
-var solutions = ILGPU_Derivative.Derivative(derivatives,initialValues,dt,t0,ILGPU_Derivative.Euler);
+var solutions = ILGPU_Derivative.Derivative(derivatives,initialValues,dt,t0,ILGPU_Derivative.RungeKuttaMethod);
 solutions.First();//initialize 
 
 var timer = new Stopwatch();
