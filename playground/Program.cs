@@ -22,6 +22,7 @@ float[] initialValues = [1,2,3];
 // use DerivativeMethod.Euler,DerivativeMethod.ImprovedEuler or 
 // DerivativeMethod.RungeKutta methods to compute derivatives
 using var solver = new GpuDiffEqSystemSolver(derivatives,DerivativeMethod.RungeKutta);
+// var solver = new CpuDiffEqSystemSolver(derivatives,DerivativeMethod.RungeKuttaCpu);
 
 solver.CompileKernel();
 
@@ -30,7 +31,7 @@ solutions.First();//initialize
 
 var timer = new Stopwatch();
 timer.Start();
-foreach(var s in solutions.Take(10)){
+foreach(var s in solutions.Take(20)){
     var valuesStr = s.Values.Select(t=>t.ToString("0.000"));
     System.Console.WriteLine($"{s.Time:0.000} : {string.Join(' ',valuesStr)}");
 }
