@@ -19,6 +19,7 @@ public class ILGPU_Derivative
         var k3<i> = f_<i>(t+halfDt<i>,prev);
         prev[i]=prevOriginal<i>+dt*k3<i>;
         var k4<i> = f_<i>(t+dt,prev);
+        prev[i]=prevOriginal<i>;
         newV[i] = prevOriginal<i>+dt/6*(k1<i>+2*k2<i>+2*k3<i>+k4<i>);
 
     """;
