@@ -7,12 +7,19 @@ using ILGPU.Runtime;
 using static Library.DerivativeMethod;
 namespace Library
 {
-    public class CpuDiffEqSystemSolver
+    public class CpuDiffEqSystemSolver : IDiffEqSolver
     {
         private int size;
         private DerivMethod derivativeMethod;
         private Lazy<Func<float, float[], float>[]> functions;
 
+        /// <param name="derivatives">A list of derivatives definitions</param>
+        /// <param name="derivativeMethod">Some of <see cref="DerivativeMethod"/> cpu </param>
+        public CpuDiffEqSystemSolver(Func<float, float[], float>[] derivatives, DerivMethod derivativeMethod){
+            size = derivatives.Length;
+            functions = new Lazy<Func<float,float[],float>[]>(() => derivatives);
+            this.derivativeMethod=derivativeMethod;
+        }
         /// <param name="derivatives">A list of derivatives definitions</param>
         /// <param name="derivativeMethod">Some of <see cref="DerivativeMethod"/> cpu </param>
         public CpuDiffEqSystemSolver(string[] derivatives, DerivMethod derivativeMethod)

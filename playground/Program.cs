@@ -21,8 +21,12 @@ float[] initialValues = [1,2,3];
 
 // use DerivativeMethod.Euler,DerivativeMethod.ImprovedEuler or 
 // DerivativeMethod.RungeKutta methods to compute derivatives
-using var solver = new GpuDiffEqSystemSolver(derivatives,DerivativeMethod.RungeKutta);
-// var solver = new CpuDiffEqSystemSolver(derivatives,DerivativeMethod.RungeKuttaCpu);
+
+using var gpuSolver = new GpuDiffEqSystemSolver(derivatives,DerivativeMethod.RungeKutta);
+var cpuSolver = new CpuDiffEqSystemSolver(derivatives,DerivativeMethod.RungeKuttaCpu);
+
+// choose different versions of derivative computation algorithms
+IDiffEqSolver solver = cpuSolver;//gpu solver;
 
 solver.CompileKernel();
 

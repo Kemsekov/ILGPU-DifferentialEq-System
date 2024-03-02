@@ -7,7 +7,7 @@ using KernelType = System.Action<ILGPU.Index1D, float, float, ILGPU.ArrayView<fl
 namespace Library
 {
 
-    public class GpuDiffEqSystemSolver : IDisposable
+    public class GpuDiffEqSystemSolver : IDisposable, IDiffEqSolver
     {
         private Context context;
         private Accelerator accelerator;
