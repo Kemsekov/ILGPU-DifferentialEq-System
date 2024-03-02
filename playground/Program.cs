@@ -5,6 +5,11 @@ using Library;
 //step size
 var dt = 0.01f;
 
+//time start value
+//this means t values going to start from 1 and all initial values
+//x_0=x(t0),y_0=y(t0) ... is set on position t=t0
+var t0 = 1;
+
 string[] derivatives = [
     "v[0]*v[1]-v[2]*t-System.MathF.Sqrt(t)", //x'=f_0=xy-zt-sqrt(t)
     "v[0]-v[2]/v[1]",                        //y'=f_1=x-z/y
@@ -12,12 +17,10 @@ string[] derivatives = [
 ];
 
 float[] initialValues = [1,2,3];
-//t0 = 1
-//this means t values going to start from 1 and all initial values
-//x_0=x(t0),y_0=y(t0) ... is set on t=t0
+
 
 //use ILGPU_Derivative.Euler or ILGPU_Derivative.RungeKuttaMethod methods to compute derivatives
-var solutions = ILGPU_Derivative.Derivative(derivatives,initialValues,dt,1,ILGPU_Derivative.Euler);
+var solutions = ILGPU_Derivative.Derivative(derivatives,initialValues,dt,t0,ILGPU_Derivative.Euler);
 solutions.First();//initialize 
 
 var timer = new Stopwatch();
