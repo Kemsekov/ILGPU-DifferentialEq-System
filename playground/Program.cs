@@ -25,7 +25,7 @@ solutions.First();//initialize
 
 var timer = new Stopwatch();
 timer.Start();
-foreach(var s in solutions.Take(10).ToArray()){
+foreach(var s in solutions.Take(10)){
     var valuesStr = s.Values.Select(t=>t.ToString("0.000"));
     System.Console.WriteLine($"{s.Time:0.000} : {string.Join(' ',valuesStr)}");
 }
