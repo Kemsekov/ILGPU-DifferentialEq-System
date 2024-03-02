@@ -54,8 +54,10 @@ namespace Library
             var P = initialValues.ToArray();
             //new values of x,y,z...
             var V = new float[size];
+            
+            yield return (P, t0);
 
-            for (int i = 0; ; i++)
+            for (int i = 1; ; i++)
             {
                 var t = t0 + i * dt;
                 _Kernel(t,P,V,dt);

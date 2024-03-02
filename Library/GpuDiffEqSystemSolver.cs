@@ -77,8 +77,10 @@ namespace Library
             P.CopyFromCPU(initialValues);
             //new values of x,y,z...
             var V = accelerator.Allocate1D<float>(size);
+            
+            yield return (P.GetAsArray1D(), t0);
 
-            for (int i = 0; ; i++)
+            for (int i = 1; ; i++)
             {
                 var t = t0 + i * dt;
                 kernel((Index1D)size, t, dt, P.View, V.View);
