@@ -21,7 +21,6 @@ public class ILGPU_Derivative
         tmp5 = f_<i>(t+dt,prev);
         prev[i]=tmp6;
         newV[i] = tmp6+dt/6*(tmp2+2*tmp3+2*tmp4+tmp5);
-
     """;
     public static IEnumerable<(float[] Values, float Time)> Derivative(string[] derivatives,float[] initialValues,float dt,float t0,string methodApply = Euler)
     {

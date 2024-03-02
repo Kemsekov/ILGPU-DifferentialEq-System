@@ -6,13 +6,10 @@ using Library;
 var dt = 0.01f;
 
 string[] derivatives = [
-    "v[0]*v[1]-v[2]*t",        //x'=f_0=x*y-z*t
-    "v[0]-v[2]/v[1]",          //y'=f_1=x-z/y
-    "v[0]+v[1]+v[2]+f_0(t,v)", //z'=f_2=x+y+z+f_0
+    "v[0]*v[1]-v[2]*t-System.MathF.Sqrt(t)", //x'=f_0=xy-zt-sqrt(t)
+    "v[0]-v[2]/v[1]",                        //y'=f_1=x-z/y
+    "v[0]+v[1]+v[2]+f_0(t,v)",               //z'=f_2=x+y+z+x'
 ];
-//x_0=1
-//y_0=2
-//z_0=3
 
 float[] initialValues = [1,2,3];
 //t0 = 1
