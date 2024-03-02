@@ -10,20 +10,20 @@ public class ILGPU_Derivative
     public const string Euler = "newV[i] = prev[i] + dt * f_<i>(t,prev);";
     public const string RungeKuttaMethod = 
     """
-        var halfDt<i>=dt/2;
-        var prevOriginal<i> = prev[i];
-        var k1<i> = f_<i>(t,prev);
-        prev[i]=prevOriginal<i>+halfDt<i>*k1<i>;
-        var k2<i> = f_<i>(t+halfDt<i>,prev);
-        prev[i]=prevOriginal<i>+halfDt<i>*k2<i>;
-        var k3<i> = f_<i>(t+halfDt<i>,prev);
-        prev[i]=prevOriginal<i>+dt*k3<i>;
-        var k4<i> = f_<i>(t+dt,prev);
-        prev[i]=prevOriginal<i>;
-        newV[i] = prevOriginal<i>+dt/6*(k1<i>+2*k2<i>+2*k3<i>+k4<i>);
+        tmp1=dt/2;
+        tmp6 = prev[i];
+        tmp2 = f_<i>(t,prev);
+        prev[i]=tmp6+tmp1*tmp2;
+        tmp3 = f_<i>(t+tmp1,prev);
+        prev[i]=tmp6+tmp1*tmp3;
+        tmp4 = f_<i>(t+tmp1,prev);
+        prev[i]=tmp6+dt*tmp4;
+        tmp5 = f_<i>(t+dt,prev);
+        prev[i]=tmp6;
+        newV[i] = tmp6+dt/6*(tmp2+2*tmp3+2*tmp4+tmp5);
 
     """;
-    public static IEnumerable<float[]> Derivative(string[] derivatives,float[] initialValues,float dt,string methodApply = Euler)
+    public static IEnumerable<(float[] Values, float Time)> Derivative(string[] derivatives,float[] initialValues,float dt,string methodApply = Euler)
     {
         // Initialize ILGPU.
         using var context = Context.CreateDefault();
@@ -54,7 +54,8 @@ public class ILGPU_Derivative
         """ + $"var dt = {dt}f;" + """ 
 
         """ +  string.Join("\n", derivFunctions) + """
-
+            //temp values used for computation
+            float tmp1 = 0,tmp2 = 0,tmp3 = 0,tmp4 = 0,tmp5 = 0,tmp6 = 0; 
             switch(i){
 
         """ + string.Join("\n", derivCases) + """
@@ -77,7 +78,7 @@ public class ILGPU_Derivative
             var t = i*dt;
             loadedKernel((Index1D)size,t, P.View, V.View);
             accelerator.Synchronize();
-            yield return V.GetAsArray1D();;
+            yield return (V.GetAsArray1D(),t);
             (P, V) = (V, P);
         }
     }
