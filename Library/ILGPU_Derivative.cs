@@ -23,7 +23,7 @@ public class ILGPU_Derivative
         newV[i] = tmp6+dt/6*(tmp2+2*tmp3+2*tmp4+tmp5);
 
     """;
-    public static IEnumerable<(float[] Values, float Time)> Derivative(string[] derivatives,float[] initialValues,float dt,string methodApply = Euler)
+    public static IEnumerable<(float[] Values, float Time)> Derivative(string[] derivatives,float[] initialValues,float dt,float t0,string methodApply = Euler)
     {
         // Initialize ILGPU.
         using var context = Context.CreateDefault();
@@ -75,7 +75,7 @@ public class ILGPU_Derivative
 
         for(int i = 0;;i++)
         {
-            var t = i*dt;
+            var t = t0+i*dt;
             loadedKernel((Index1D)size,t, P.View, V.View);
             accelerator.Synchronize();
             yield return (V.GetAsArray1D(),t);

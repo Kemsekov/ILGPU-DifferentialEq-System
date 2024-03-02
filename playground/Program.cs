@@ -15,15 +15,19 @@ string[] derivatives = [
 //z_0=3
 
 float[] initialValues = [1,2,3];
+//t0 = 1
+//this means t values going to start from 1 and all initial values
+//x_0=x(t0),y_0=y(t0) ... is set on t=t0
 
 //use ILGPU_Derivative.Euler or ILGPU_Derivative.RungeKuttaMethod methods to compute derivatives
-var solutions = ILGPU_Derivative.Derivative(derivatives,initialValues,dt,ILGPU_Derivative.Euler);
+var solutions = ILGPU_Derivative.Derivative(derivatives,initialValues,dt,1,ILGPU_Derivative.Euler);
 solutions.First();//initialize 
 
 var timer = new Stopwatch();
 timer.Start();
 foreach(var s in solutions.Take(10).ToArray()){
-    System.Console.WriteLine(string.Join(' ',s));
+    var valuesStr = s.Values.Select(t=>t.ToString("0.000"));
+    System.Console.WriteLine($"{s.Time:0.000} : {string.Join(' ',valuesStr)}");
 }
 System.Console.WriteLine("Done in "+timer.ElapsedMilliseconds);
 
