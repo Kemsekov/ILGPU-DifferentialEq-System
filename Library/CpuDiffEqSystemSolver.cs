@@ -26,9 +26,9 @@ namespace Library
         {
             size = derivatives.Length;
             var derivFunctions =
-                derivatives.Select((v, i) => $"float f_{i}(float t,float[] v)=>{v};")
+                derivatives.Select((v, i) => $"float f{i}(float t,float[] v)=>{v};")
                 .ToArray();
-            var funcDecl = derivatives.Select((v, i)=>$"f_{i}").ToArray();
+            var funcDecl = derivatives.Select((v, i)=>$"f{i}").ToArray();
             var code =
             @"
             System.Func<float,float[],float>[]

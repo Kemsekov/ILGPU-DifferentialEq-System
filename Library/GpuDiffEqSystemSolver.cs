@@ -23,7 +23,7 @@ namespace Library
                                       .CreateAccelerator(context);
             size = derivatives.Length;
             var derivFunctions =
-                derivatives.Select((v, i) => $"float f_{i}(float t,ILGPU.ArrayView<float> v)=>{v};")
+                derivatives.Select((v, i) => $"float f{i}(float t,ILGPU.ArrayView<float> v)=>{v};")
                 .ToArray();
 
             var derivCases =
