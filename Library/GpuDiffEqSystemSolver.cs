@@ -33,25 +33,25 @@ namespace Library
 
             var code =
             @"
-        System.Action<ILGPU.Index1D,float,float, ILGPU.ArrayView<float>, ILGPU.ArrayView<float>>
-        Execute(ILGPU.Runtime.Accelerator accelerator)
-        {
-            return ILGPU.Runtime.KernelLoaders
-                .LoadAutoGroupedStreamKernel<ILGPU.Index1D,float,float, ILGPU.ArrayView<float>, ILGPU.ArrayView<float>>
-                    (accelerator,Kernel);
-        }
-        static void Kernel(ILGPU.Index1D i,float t,float dt, ILGPU.ArrayView<float> prev, ILGPU.ArrayView<float> newV){ 
-
-        " + string.Join("\n", derivFunctions) + @"
-            //temp values used for computation
-            float tmp1 = 0,tmp2 = 0,tmp3 = 0,tmp4 = 0,tmp5 = 0,tmp6 = 0; 
-            switch(i){
-
-        " + string.Join("\n", derivCases) + @"
-
+            System.Action<ILGPU.Index1D,float,float, ILGPU.ArrayView<float>, ILGPU.ArrayView<float>>
+            Execute(ILGPU.Runtime.Accelerator accelerator)
+            {
+                return ILGPU.Runtime.KernelLoaders
+                    .LoadAutoGroupedStreamKernel<ILGPU.Index1D,float,float, ILGPU.ArrayView<float>, ILGPU.ArrayView<float>>
+                        (accelerator,Kernel);
             }
-        }
-        ";
+            static void Kernel(ILGPU.Index1D i,float t,float dt, ILGPU.ArrayView<float> prev, ILGPU.ArrayView<float> newV){ 
+
+            " + string.Join("\n", derivFunctions) + @"
+                //temp values used for computation
+                float tmp1 = 0,tmp2 = 0,tmp3 = 0,tmp4 = 0,tmp5 = 0,tmp6 = 0; 
+                switch(i){
+
+            " + string.Join("\n", derivCases) + @"
+
+                }
+            }
+            ";
             loadedKernel = new Lazy<KernelType>(() => DynamicCompilation.CompileFunction<Accelerator, KernelType>(
                 code,
                 typeof(Index1D), typeof(ArrayView<int>), typeof(KernelLoaders))
