@@ -4,6 +4,10 @@
     <ProjectReference Include="..\Library\Library.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="ScottPlot" Version="5.0.21" />
+  </ItemGroup>
+
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>

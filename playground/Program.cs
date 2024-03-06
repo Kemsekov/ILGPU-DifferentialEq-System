@@ -1,5 +1,8 @@
 ﻿using System.Diagnostics;
+using ILGPU;
 using Library;
+using ScottPlot;
+
 //solve system of non-linear differential equations
 
 //step size
