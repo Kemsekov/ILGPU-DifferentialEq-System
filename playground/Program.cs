@@ -16,12 +16,12 @@ var n = 25;
 var t0 = 1;
 
 string[] derivatives = [
-    "v[0]*v[1]-v[2]*t-System.MathF.Sqrt(t)", //x'=f0=xy-zt-sqrt(t)
+    "v[0]*v[1]-v[2]*t-System.Math.Sqrt(t)", //x'=f0=xy-zt-sqrt(t)
     "v[0]-v[2]/v[1]",                        //y'=f1=x-z/y
     "v[0]+v[1]+v[2]+f0(t,v)",                //z'=f2=x+y+z+x'
 ];
 
-float[] initialValues = [1,2,3];
+double[] initialValues = [1,2,3];
 
 
 // use DerivativeMethod.Euler,DerivativeMethod.ImprovedEuler or 
@@ -31,7 +31,7 @@ using var gpuSolver = new GpuDiffEqSystemSolver(derivatives,DerivativeMethod.Imp
 var cpuSolver = new CpuDiffEqSystemSolver(derivatives,DerivativeMethod.ImprovedEulerCpu);
 
 // choose different versions of derivative computation algorithms
-IDiffEqSolver solver = gpuSolver;//gpu solver;
+IDiffEqSolver solver = cpuSolver;//gpu solver;
 
 solver.CompileKernel();
 

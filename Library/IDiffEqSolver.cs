@@ -9,6 +9,6 @@ namespace Library
         /// Precompiles kernel
         /// </summary>
         void CompileKernel();
-        IEnumerable<(float[] Values, float Time)> EnumerateSolutions(float[] initialValues, float dt, float t0);
+        IEnumerable<(double[] Values, double Time)> EnumerateSolutions(double[] initialValues, double dt, double t0);
     }
 }

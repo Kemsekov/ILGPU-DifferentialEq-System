@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ILGPU;
 using ILGPU.Runtime;
-using KernelType = System.Action<ILGPU.Index1D, float, float, ILGPU.ArrayView<float>, ILGPU.ArrayView<float>>;
+using KernelType = System.Action<ILGPU.Index1D, double, double, ILGPU.ArrayView<double>, ILGPU.ArrayView<double>>;
 namespace Library
 {
 
@@ -23,7 +23,7 @@ namespace Library
                                       .CreateAccelerator(context);
             size = derivatives.Length;
             var derivFunctions =
-                derivatives.Select((v, i) => $"float f{i}(float t,ILGPU.ArrayView<float> v)=>{v};")
+                derivatives.Select((v, i) => $"double f{i}(double t,ILGPU.ArrayView<double> v)=>{v};")
                 .ToArray();
 
             var derivCases =
@@ -33,18 +33,18 @@ namespace Library
 
             var code =
             @"
-            System.Action<ILGPU.Index1D,float,float, ILGPU.ArrayView<float>, ILGPU.ArrayView<float>>
+            System.Action<ILGPU.Index1D,double,double, ILGPU.ArrayView<double>, ILGPU.ArrayView<double>>
             Execute(ILGPU.Runtime.Accelerator accelerator)
             {
                 return ILGPU.Runtime.KernelLoaders
-                    .LoadAutoGroupedStreamKernel<ILGPU.Index1D,float,float, ILGPU.ArrayView<float>, ILGPU.ArrayView<float>>
+                    .LoadAutoGroupedStreamKernel<ILGPU.Index1D,double,double, ILGPU.ArrayView<double>, ILGPU.ArrayView<double>>
                         (accelerator,Kernel);
             }
-            static void Kernel(ILGPU.Index1D i,float t,float dt, ILGPU.ArrayView<float> prev, ILGPU.ArrayView<float> newV){ 
+            static void Kernel(ILGPU.Index1D i,double t,double dt, ILGPU.ArrayView<double> prev, ILGPU.ArrayView<double> newV){ 
 
             " + string.Join("\n", derivFunctions) + @"
                 //temp values used for computation
-                float tmp1 = 0,tmp2 = 0,tmp3 = 0,tmp4 = 0,tmp5 = 0,tmp6 = 0; 
+                double tmp1 = 0,tmp2 = 0,tmp3 = 0,tmp4 = 0,tmp5 = 0,tmp6 = 0; 
                 switch(i){
 
             " + string.Join("\n", derivCases) + @"
@@ -69,14 +69,14 @@ namespace Library
             accelerator.Dispose();
             context.Dispose();
         }
-        public IEnumerable<(float[] Values, float Time)> EnumerateSolutions(float[] initialValues, float dt, float t0)
+        public IEnumerable<(double[] Values, double Time)> EnumerateSolutions(double[] initialValues, double dt, double t0)
         {
             var kernel = loadedKernel.Value;
             //previous values of x,y,z...
-            var P = accelerator.Allocate1D<float>(size);
+            var P = accelerator.Allocate1D<double>(size);
             P.CopyFromCPU(initialValues);
             //new values of x,y,z...
-            var V = accelerator.Allocate1D<float>(size);
+            var V = accelerator.Allocate1D<double>(size);
             
             yield return (P.GetAsArray1D(), t0);
 

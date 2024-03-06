@@ -13,14 +13,14 @@ namespace Library
     {
         private int size;
         private DerivMethod derivativeMethod;
-        private Lazy<Func<float, float[], float>[]> functions;
+        private Lazy<Func<double, double[], double>[]> functions;
 
         /// <param name="derivatives">A list of derivatives definitions</param>
         /// <param name="derivativeMethod">Some of <see cref="DerivativeMethod"/> cpu </param>
-        public CpuDiffEqSystemSolver(Func<float, float[], float>[] derivatives, DerivMethod derivativeMethod)
+        public CpuDiffEqSystemSolver(Func<double, double[], double>[] derivatives, DerivMethod derivativeMethod)
         {
             size = derivatives.Length;
-            functions = new Lazy<Func<float, float[], float>[]>(() => derivatives);
+            functions = new Lazy<Func<double, double[], double>[]>(() => derivatives);
             this.derivativeMethod = derivativeMethod;
         }
         /// <param name="derivatives">A list of derivatives definitions</param>
@@ -29,20 +29,20 @@ namespace Library
         {
             size = derivatives.Length;
             var derivFunctions =
-                derivatives.Select((v, i) => $"float f{i}(float t,float[] v)=>{v};")
+                derivatives.Select((v, i) => $"double f{i}(double t,double[] v)=>{v};")
                 .ToArray();
             var funcDecl = derivatives.Select((v, i) => $"f{i}").ToArray();
             var code =
             @"
-            System.Func<float,float[],float>[]
+            System.Func<double,double[],double>[]
             Execute(int a)
             {
                 " + string.Join("\n", derivFunctions) + @"
-                return " + $"new System.Func<float,float[],float>[]{{ {string.Join(",", funcDecl)} }} ;" + @"
+                return " + $"new System.Func<double,double[],double>[]{{ {string.Join(",", funcDecl)} }} ;" + @"
             }
             ";
             this.derivativeMethod = derivativeMethod;
-            functions = new Lazy<Func<float, float[], float>[]>(() => DynamicCompilation.CompileFunction<int, Func<float, float[], float>[]>(code)(1));
+            functions = new Lazy<Func<double, double[], double>[]>(() => DynamicCompilation.CompileFunction<int, Func<double, double[], double>[]>(code)(1));
         }
         /// <summary>
         /// Precompiles kernel
@@ -51,12 +51,12 @@ namespace Library
         {
             var _ = functions.Value;
         }
-        public IEnumerable<(float[] Values, float Time)> EnumerateSolutions(float[] initialValues, float dt, float t0)
+        public IEnumerable<(double[] Values, double Time)> EnumerateSolutions(double[] initialValues, double dt, double t0)
         {
             //previous values of x,y,z...
             var P = initialValues.ToArray();
             //new values of x,y,z...
-            var V = new float[size];
+            var V = new double[size];
 
             yield return (P, t0);
 
@@ -68,7 +68,7 @@ namespace Library
                 (P, V) = (V, P);
             }
         }
-        private void _Kernel(float t, float[] p, float[] v, float dt)
+        private void _Kernel(double t, double[] p, double[] v, double dt)
         {
             var funcs = functions.Value;
             Parallel.For(0, size, i => derivativeMethod(p, v, dt, t, i, funcs[i]));
