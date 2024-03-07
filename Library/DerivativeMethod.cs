@@ -4,11 +4,11 @@ namespace Library
 {
     public class DerivativeMethod
     {
-        public delegate void DerivMethod(double[] prev, double[] newV, double dt, double t, int i, Func<double, double[], double> f_i);
+        public delegate double DerivMethod(double[] prev, double dt, double t, int i, Func<double, double[], double> f_i);
         public const string Euler = "newV[i] = prev[i] + dt * f<i>(t,prev);";
-        public static void EulerCpu(double[] prev, double[] newV, double dt, double t, int i, Func<double, double[], double> f_i)
+        public static double EulerCpu(double[] prev, double dt, double t, int i, Func<double, double[], double> f_i)
         {
-            newV[i] = prev[i] + dt * f_i(t, prev);
+            return prev[i] + dt * f_i(t, prev);
         }
         public const string ImprovedEuler =
         @"
@@ -18,13 +18,14 @@ namespace Library
         newV[i]=tmp3+0.5f*dt*(tmp1+f<i>(t+dt,prev));
         prev[i]=tmp3;
         ";
-        public static void ImprovedEulerCpu(double[] prev, double[] newV, double dt, double t, int i, Func<double, double[], double> f_i)
+        public static double ImprovedEulerCpu(double[] prev, double dt, double t, int i, Func<double, double[], double> f_i)
         {
             var originalPrev = prev[i];
             var deriv = f_i(t, prev);
             prev[i] = originalPrev + dt * deriv;
-            newV[i] = originalPrev + 0.5f * dt * (deriv + f_i(t + dt, prev));
+            var res = originalPrev + 0.5f * dt * (deriv + f_i(t + dt, prev));
             prev[i] = originalPrev;
+            return res;
         }
         public const string RungeKutta =
         @"
@@ -40,7 +41,7 @@ namespace Library
         prev[i]=tmp6;
         newV[i] = tmp6+dt/6*(tmp2+2*tmp3+2*tmp4+tmp5);
         ";
-        public static void RungeKuttaCpu(double[] prev, double[] newV, double dt, double t, int i, Func<double, double[], double> f_i)
+        public static double RungeKuttaCpu(double[] prev, double dt, double t, int i, Func<double, double[], double> f_i)
         {
             var dtHalf = dt / 2;
             var originalPrev = prev[i];
@@ -52,7 +53,7 @@ namespace Library
             prev[i] = originalPrev + dt * k3;
             var k4 = f_i(t + dt, prev);
             prev[i] = originalPrev;
-            newV[i] = originalPrev + dt / 6 * (k1 + 2 * k2 + 2 * k3 + k4);
+            return originalPrev + dt / 6 * (k1 + 2 * k2 + 2 * k3 + k4);
         }
         /// <summary>
         /// Approximates first derivative of tensor-defined function at point (<paramref name="i"/>,<paramref name="j"/>,<paramref name="k"/>) on <paramref name="by"/> dimension

@@ -71,7 +71,7 @@ namespace Library
         private void _Kernel(double t, double[] p, double[] v, double dt)
         {
             var funcs = functions.Value;
-            Parallel.For(0, size, i => derivativeMethod(p, v, dt, t, i, funcs[i]));
+            Parallel.For(0, size, i => v[i]=derivativeMethod(p, dt, t, i, funcs[i]));
         }
        
     }

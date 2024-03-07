@@ -189,10 +189,9 @@ namespace Library
             var size2 = p[0].GetLength(2);
             var funcs = functions.Value;
             
-            var input = new double[size+derivativesSize+3];
-            var output = new double[size];
-            // Parallel.For(0,size0,i=>{
-                for (int i = 0; i < size0; i++)
+            var inputTL =  new ThreadLocal<double[]>(()=>new double[size+derivativesSize+3]);
+            Parallel.For(0,size0,i=>{
+                var input=inputTL.Value;
                 for (int j = 0; j < size1; j++)
                 for (int k = 0; k < size2; k++){
                     //pass previous values
@@ -204,12 +203,9 @@ namespace Library
                     input[^2]=j*h+y0;
                     input[^3]=k*h+z0;
                     //compute new values
-                    derivativeMethod(input,output,dt,t,variableIndex,funcs[variableIndex]);
-
-                    //save new values
-                    v[variableIndex][i,j,k]=output[variableIndex];
+                    v[variableIndex][i,j,k]=derivativeMethod(input,dt,t,variableIndex,funcs[variableIndex]);
                 }
-            // });
+            });
         }
 
         private void GridDerivativeKernelZ(double[,,] previous, double h, double[,,] grid)
