@@ -117,7 +117,6 @@ namespace Library
         /// <returns></returns>
         public IEnumerable<(double[][,,] Values, double Time)> EnumerateSolutions(double[][,,] initialValues, double dt, double t0, double h,double x0,double y0,double z0)
         {
-
             var size0 = initialValues[0].GetLength(0);
             var size1 = initialValues[0].GetLength(1);
             var size2 = initialValues[0].GetLength(2);
@@ -192,26 +191,25 @@ namespace Library
             
             var input = new double[size+derivativesSize+3];
             var output = new double[size];
+            // Parallel.For(0,size0,i=>{
+                for (int i = 0; i < size0; i++)
+                for (int j = 0; j < size1; j++)
+                for (int k = 0; k < size2; k++){
+                    //pass previous values
+                    for(int w = 0;w<size;w++)
+                        input[w]=p[w][i,j,k];
+                    for(int w = 0;w<derivativesSize;w++)
+                        input[w+size]=derivsPlaced[w][i,j,k];
+                    input[^1]=i*h+x0;
+                    input[^2]=j*h+y0;
+                    input[^3]=k*h+z0;
+                    //compute new values
+                    derivativeMethod(input,output,dt,t,variableIndex,funcs[variableIndex]);
 
-            for (int i = 0; i < size0; i++)
-            for (int j = 0; j < size1; j++)
-            for (int k = 0; k < size2; k++){
-                //pass previous values
-                for(int w = 0;w<size;w++)
-                    input[w]=p[w][i,j,k];
-                for(int w = 0;w<derivativesSize;w++)
-                    input[w+size]=derivsPlaced[w][i,j,k];
-                input[^1]=i*h+x0;
-                input[^2]=j*h+y0;
-                input[^3]=k*h+z0;
-                //compute new values
-                derivativeMethod(input,output,dt,t,variableIndex,funcs[variableIndex]);
-
-                //save new values
-                v[variableIndex][i,j,k]=output[variableIndex];
-            }
-            // Parallel.For(0, size, i => derivativeMethod(p, v, dt, t, i, funcs[i]));
-
+                    //save new values
+                    v[variableIndex][i,j,k]=output[variableIndex];
+                }
+            // });
         }
 
         private void GridDerivativeKernelZ(double[,,] previous, double h, double[,,] grid)
@@ -219,11 +217,12 @@ namespace Library
             var size0 = grid.GetLength(0);
             var size1 = grid.GetLength(1);
             var size2 = grid.GetLength(2);
-            for (int i = 0; i < size0; i++)
-            for (int j = 0; j < size1; j++)
-            for (int k = 0; k < size2; k++){
-                grid[i,j,k]=DerivativeMethod.DerivativeZ(i,j,k,h,previous);
-            }
+            Parallel.For(0,size0,i=>{
+                for (int j = 0; j < size1; j++)
+                for (int k = 0; k < size2; k++){
+                    grid[i,j,k]=DerivativeMethod.DerivativeZ(i,j,k,h,previous);
+                }
+            });
         }
 
         private void GridDerivativeKernelY(double[,,] previous, double h, double[,,] grid)
@@ -231,11 +230,12 @@ namespace Library
             var size0 = grid.GetLength(0);
             var size1 = grid.GetLength(1);
             var size2 = grid.GetLength(2);
-            for (int i = 0; i < size0; i++)
-            for (int j = 0; j < size1; j++)
-            for (int k = 0; k < size2; k++){
-                grid[i,j,k]=DerivativeMethod.DerivativeY(i,j,k,h,previous);
-            }
+            Parallel.For(0,size0,i=>{
+                for (int j = 0; j < size1; j++)
+                for (int k = 0; k < size2; k++){
+                    grid[i,j,k]=DerivativeMethod.DerivativeY(i,j,k,h,previous);
+                }
+            });
         }
 
         private void GridDerivativeKernelX(double[,,] previous, double h, double[,,] grid)
@@ -243,11 +243,12 @@ namespace Library
             var size0 = grid.GetLength(0);
             var size1 = grid.GetLength(1);
             var size2 = grid.GetLength(2);
-            for (int i = 0; i < size0; i++)
-            for (int j = 0; j < size1; j++)
-            for (int k = 0; k < size2; k++){
-                grid[i,j,k]=DerivativeMethod.DerivativeX(i,j,k,h,previous);
-            }
+            Parallel.For(0,size0,i=>{
+                for (int j = 0; j < size1; j++)
+                for (int k = 0; k < size2; k++){
+                    grid[i,j,k]=DerivativeMethod.DerivativeX(i,j,k,h,previous);
+                }
+            });
         }
     }
 }
