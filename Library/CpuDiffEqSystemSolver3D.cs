@@ -9,7 +9,7 @@ using ILGPU.Runtime;
 using static Library.DerivativeMethod;
 namespace Library
 {
-    public class CpuDiffEqSystemSolver3D
+    public class CpuDiffEqSystemSolver3D : IDiffEqSolver3D
     {
         private int size;
         private int derivativesSize;

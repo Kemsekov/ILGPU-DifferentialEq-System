@@ -11,4 +11,12 @@ namespace Library
         void CompileKernel();
         IEnumerable<(double[] Values, double Time)> EnumerateSolutions(double[] initialValues, double dt, double t0);
     }
+    public interface IDiffEqSolver3D
+    {
+        /// <summary>
+        /// Precompiles kernel
+        /// </summary>
+        void CompileKernel();
+        IEnumerable<(double[][,,] Values, double Time)> EnumerateSolutions(double[][,,] initialValues, double dt, double t0, double h, double x0, double y0, double z0);
+    }
 }

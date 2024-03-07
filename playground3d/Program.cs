@@ -31,8 +31,8 @@ string[] derivatives = [
 string[] partial = ["v0_xx", "v0_yy"];
 //grid step size
 var h = 0.1;
-var xsize = 1000;
-var ysize = 1000;
+var xsize = 100;
+var ysize = 100;
 
 double[][,,] initialValues = [new double[xsize, ysize, 1]];
 
@@ -44,10 +44,10 @@ foreach (var init in initialValues)
 }
 foreach (var init in initialValues)
 {
-    for (int i = 0; i < 200; i++)
-        for (int j = 0; j < 300; j++)
+    for (int i = 0; i < 20; i++)
+        for (int j = 0; j < 30; j++)
         {
-            init[i + 20, j + 50, 0] = 30; ;
+            init[i + 20, j + 50, 0] = Random.Shared.NextDouble()*30; ;
         }
 }
 
