@@ -171,26 +171,33 @@ namespace Library
         {
             var _ = loadedKernel.Value;
         }
+        public IEnumerable<(double[][,,] Values, double Time)> EnumerateSolutions(double[][,,] initialValues, double dt, double t0, double h, double x0, double y0, double z0){
+            var buffer = initialValues.Select(grid => new double[grid.GetLength(0), grid.GetLength(1), grid.GetLength(2)]).ToArray();
+            
+            foreach(var (values,time) in EnumerateSolutionsRaw(initialValues,dt,t0,h,x0,y0,z0)){
+                Move(buffer,values);
+                yield return (buffer,time);
+            }
+        }
+
         /// <param name="initialValues">3d grid initial values for each variable</param>
         /// <param name="dt">time step size</param>
         /// <param name="t0">time zero</param>
         /// <param name="h">grid step size</param>
         /// <returns></returns>
-        public IEnumerable<(double[][,,] Values, double Time)> EnumerateSolutions(double[][,,] initialValues, double dt, double t0, double h, double x0, double y0, double z0)
+        public IEnumerable<(Array3DView[] Values, double Time)> EnumerateSolutionsRaw(double[][,,] initialValues, double dt, double t0, double h, double x0, double y0, double z0)
         {
             var size0 = initialValues[0].GetLength(0);
             var size1 = initialValues[0].GetLength(1);
             var size2 = initialValues[0].GetLength(2);
 
-            var buffer = initialValues.Select(grid => new double[grid.GetLength(0), grid.GetLength(1), grid.GetLength(2)]).ToArray();
 
             //previous values of x,y,z...
 
             var P = initialValues.Select(grid => accelerator.Allocate3DDenseXY(grid)).ToArray();
             //new values of x,y,z...
             var V = initialValues.Select(grid => accelerator.Allocate3DDenseXY<double>((grid.GetLength(0), grid.GetLength(1), grid.GetLength(2)))).ToArray();
-            Move(buffer, P);
-            yield return (buffer, t0);
+            yield return (P.Select(v=>v.View).ToArray(), t0);
 
             //derivatives grid
             //so grid for derivative v1_xy can be found at
@@ -203,13 +210,12 @@ namespace Library
             {
                 var t = t0 + i * dt;
                 _Kernel(t, pJagged, vJagged, dt, derivatives, h, x0, y0, z0);
-                Move(buffer, V);
-                yield return (buffer, t);
+                yield return (V.Select(v=>v.View).ToArray(), t);
                 (pJagged, vJagged) = (vJagged, pJagged);
             }
         }
 
-        private static void Move(double[][,,] buffer, Array3D[] P)
+        private static void Move(double[][,,] buffer, Array3DView[] P)
         {
             for (int i = 0; i < P.Length; i++)
             {
