@@ -18,7 +18,7 @@ void Move(double[][,,] buffer, Array3DView[] P)
 //step size
 var dt = 0.001;
 
-var n = 10000;
+var n = 1000;
 
 //time start value
 //this means t values going to start from 1 and all initial values
@@ -74,7 +74,7 @@ var counter = 0;
 foreach (var s in solutions.Take(n))
 {
     counter++;
-    if (counter % 1000 == 0)
+    if (counter % 100 == 0)
     {
         var data = s.Values[0].ToCpu();
         var plt = new Plot();

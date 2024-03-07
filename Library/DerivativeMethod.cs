@@ -79,7 +79,6 @@ namespace Library
             }
             throw new ArgumentException("Cannot find derivative at index " + by + " for 3-dimensional tensor");
         }
-        static int abs(int d)=>Math.Abs(d);
         /// <summary>
         /// Approximates first z derivative of tensor-defined function at point (<paramref name="i"/>,<paramref name="j"/>,<paramref name="k"/>) on <paramref name="by"/> dimension
         /// </summary>
@@ -103,7 +102,7 @@ namespace Library
                 return CentralDifference(
                     h,
                     grid[i, j, (k + 1)%size2],
-                    grid[i, j, abs(k - 1)%size2]
+                    grid[i, j, (size2+k - 1)%size2]
                 );
         }
 
@@ -131,7 +130,7 @@ namespace Library
                 return CentralDifference(
                     h,
                     grid[i, (j + 1)%size1, k],
-                    grid[i, abs(j - 1)%size1, k]
+                    grid[i, (size1+j - 1)%size1, k]
                 );
             
         }
@@ -159,7 +158,7 @@ namespace Library
                 return CentralDifference(
                     h,
                     grid[(i + 1)%size0, j, k],
-                    grid[abs(i - 1)%size0, j, k]
+                    grid[(size0+i - 1)%size0, j, k]
                 );
         }
 
@@ -186,7 +185,7 @@ namespace Library
                 return CentralDifference(
                     h,
                     grid[i, j, (k + 1)%size2],
-                    grid[i, j, abs(k - 1)%size2]
+                    grid[i, j, (size2+k - 1)%size2]
                 );
         }
 
@@ -214,7 +213,7 @@ namespace Library
                 return CentralDifference(
                     h,
                     grid[i, (j + 1)%size1, k],
-                    grid[i, abs(j - 1)%size1, k]
+                    grid[i, (size1+j - 1)%size1, k]
                 );
             
         }
@@ -242,7 +241,7 @@ namespace Library
                 return CentralDifference(
                     h,
                     grid[(i + 1)%size0, j, k],
-                    grid[abs(i - 1)%size0, j, k]
+                    grid[(size0+i - 1)%size0, j, k]
                 );
         }
 
