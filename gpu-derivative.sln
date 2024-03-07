@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Library", "Library\Library.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "playground", "playground\playground.csproj", "{E7DDB890-3307-401F-A6CE-4A4F7C57F3A6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "playground3d", "playground3d\playground3d.csproj", "{10347484-F192-41D9-A334-99DF0A7F1CB8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{E7DDB890-3307-401F-A6CE-4A4F7C57F3A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E7DDB890-3307-401F-A6CE-4A4F7C57F3A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E7DDB890-3307-401F-A6CE-4A4F7C57F3A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10347484-F192-41D9-A334-99DF0A7F1CB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10347484-F192-41D9-A334-99DF0A7F1CB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10347484-F192-41D9-A334-99DF0A7F1CB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10347484-F192-41D9-A334-99DF0A7F1CB8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -1,4 +1,5 @@
 using System;
+using Array3DView = ILGPU.Runtime.ArrayView3D<double, ILGPU.Stride3D.DenseXY>;
 
 namespace Library
 {
@@ -15,7 +16,7 @@ namespace Library
         tmp3=prev[i];
         tmp1=f<i>(t,prev);
         prev[i]=tmp3 + dt * tmp1;
-        newV[i]=tmp3+0.5f*dt*(tmp1+f<i>(t+dt,prev));
+        newV[i]=tmp3+0.5*dt*(tmp1+f<i>(t+dt,prev));
         prev[i]=tmp3;
         ";
         public static double ImprovedEulerCpu(double[] prev, double dt, double t, int i, Func<double, double[], double> f_i)
@@ -147,6 +148,89 @@ namespace Library
         public static double DerivativeX(int i, int j, int k, double h, double[,,] grid)
         {
             var size0 = grid.GetLength(0);
+            if (i > 1 && i < size0 - 2)
+                return CentralDifference4Order(
+                    h,
+                    grid[i + 1, j, k],
+                    grid[i + 2, j, k],
+                    grid[i - 1, j, k],
+                    grid[i - 2, j, k]
+                );
+                return CentralDifference(
+                    h,
+                    grid[(i + 1)%size0, j, k],
+                    grid[abs(i - 1)%size0, j, k]
+                );
+        }
+
+        /// <summary>
+        /// Approximates first z derivative of tensor-defined function at point (<paramref name="i"/>,<paramref name="j"/>,<paramref name="k"/>) on <paramref name="by"/> dimension
+        /// </summary>
+        /// <param name="h">discretization size</param>
+        /// <param name="i">Index 0</param>
+        /// <param name="j">Index 1</param>
+        /// <param name="k">Index 2</param>
+        /// <param name="grid"></param>
+        /// <returns>derivative approximation</returns>
+        public static double DerivativeZ(int i, int j, int k, double h, Array3DView grid)
+        {
+            long size2 = grid.Extent.Y;
+            if (k > 1 && k < size2 - 2)
+                return CentralDifference4Order(
+                    h,
+                    grid[i, j, k + 1],
+                    grid[i, j, k + 2],
+                    grid[i, j, k - 1],
+                    grid[i, j, k - 2]
+                );
+                return CentralDifference(
+                    h,
+                    grid[i, j, (k + 1)%size2],
+                    grid[i, j, abs(k - 1)%size2]
+                );
+        }
+
+        /// <summary>
+        /// Approximates first y derivative of tensor-defined function at point (<paramref name="i"/>,<paramref name="j"/>,<paramref name="k"/>) on <paramref name="by"/> dimension
+        /// </summary>
+        /// <param name="h">discretization size</param>
+        /// <param name="i">Index 0</param>
+        /// <param name="j">Index 1</param>
+        /// <param name="k">Index 2</param>
+        /// <param name="grid"></param>
+        /// <returns>derivative approximation</returns>
+        public static double DerivativeY(int i, int j, int k, double h, Array3DView grid)
+        {
+            long size1 = grid.Extent.Y;
+            if (j > 1 && j < size1 - 2)
+                return CentralDifference4Order(
+                    h,
+                    grid[i, j + 1, k],
+                    grid[i, j + 2, k],
+                    grid[i, j - 1, k],
+                    grid[i, j - 2, k]
+                );
+            
+                return CentralDifference(
+                    h,
+                    grid[i, (j + 1)%size1, k],
+                    grid[i, abs(j - 1)%size1, k]
+                );
+            
+        }
+
+        /// <summary>
+        /// Approximates first x derivative of tensor-defined function at point (<paramref name="i"/>,<paramref name="j"/>,<paramref name="k"/>) on <paramref name="by"/> dimension
+        /// </summary>
+        /// <param name="h">discretization size</param>
+        /// <param name="i">Index 0</param>
+        /// <param name="j">Index 1</param>
+        /// <param name="k">Index 2</param>
+        /// <param name="grid"></param>
+        /// <returns>derivative approximation</returns>
+        public static double DerivativeX(int i, int j, int k, double h, Array3DView grid)
+        {
+            var size0 = grid.Extent.Y;
             if (i > 1 && i < size0 - 2)
                 return CentralDifference4Order(
                     h,
