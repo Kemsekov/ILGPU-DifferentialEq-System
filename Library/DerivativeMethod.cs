@@ -77,7 +77,7 @@ namespace Library
             }
             throw new ArgumentException("Cannot find derivative at index " + by + " for 3-dimensional tensor");
         }
-
+        static int abs(int d)=>Math.Abs(d);
         /// <summary>
         /// Approximates first z derivative of tensor-defined function at point (<paramref name="i"/>,<paramref name="j"/>,<paramref name="k"/>) on <paramref name="by"/> dimension
         /// </summary>
@@ -98,25 +98,11 @@ namespace Library
                     grid[i, j, k - 1],
                     grid[i, j, k - 2]
                 );
-            if (k > 0 && k < size2 - 1)
                 return CentralDifference(
                     h,
-                    grid[i, j, k + 1],
-                    grid[i, j, k - 1]
+                    grid[i, j, (k + 1)%size2],
+                    grid[i, j, abs(k - 1)%size2]
                 );
-            if (k == 0)
-                return ForwardDifference3Points(
-                    h,
-                    grid[i, j, k],
-                    grid[i, j, k + 1],
-                    grid[i, j, k + 2]
-                );
-            return BackwardDifference3Points(
-                h,
-                grid[i, j, k],
-                grid[i, j, k - 1],
-                grid[i, j, k - 2]
-            );
         }
 
         /// <summary>
@@ -139,25 +125,13 @@ namespace Library
                     grid[i, j - 1, k],
                     grid[i, j - 2, k]
                 );
-            if (j > 0 && j < size1 - 1)
+            
                 return CentralDifference(
                     h,
-                    grid[i, j + 1, k],
-                    grid[i, j - 1, k]
+                    grid[i, (j + 1)%size1, k],
+                    grid[i, abs(j - 1)%size1, k]
                 );
-            if (j == 0)
-                return ForwardDifference3Points(
-                    h,
-                    grid[i, j, k],
-                    grid[i, j + 1, k],
-                    grid[i, j + 2, k]
-                );
-            return BackwardDifference3Points(
-                h,
-                grid[i, j, k],
-                grid[i, j - 1, k],
-                grid[i, j - 2, k]
-            );
+            
         }
 
         /// <summary>
@@ -180,25 +154,11 @@ namespace Library
                     grid[i - 1, j, k],
                     grid[i - 2, j, k]
                 );
-            if (i > 0 && i < size0 - 1)
                 return CentralDifference(
                     h,
-                    grid[i + 1, j, k],
-                    grid[i - 1, j, k]
+                    grid[(i + 1)%size0, j, k],
+                    grid[abs(i - 1)%size0, j, k]
                 );
-            if (i == 0)
-                return ForwardDifference3Points(
-                    h,
-                    grid[i, j, k],
-                    grid[i + 1, j, k],
-                    grid[i + 2, j, k]
-                );
-            return BackwardDifference3Points(
-                h,
-                grid[i, j, k],
-                grid[i - 1, j, k],
-                grid[i - 2, j, k]
-            );
         }
 
         static double BackwardDifference3Points(double h, double u, double u_m, double u_mm)

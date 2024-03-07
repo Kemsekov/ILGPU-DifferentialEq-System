@@ -146,6 +146,7 @@ namespace Library
         {
 
             var derivsPlaced = new double[derivativesSize][,,];
+            var axisDeriv = new Dictionary<string,double[,,]>();
             //for all required derivatives compute their grid values
             foreach (var (variable, derivs) in derivatives)
             {
@@ -156,6 +157,10 @@ namespace Library
                         derivsPlaced[i]=partial.grid;
                     }
                     var axis = partial.derivative.Last();
+                    if(partial.derivative.Length==1)
+                        previous = p[variable];
+                    else
+                        previous = axisDeriv[partial.derivative[..^1]];
                     switch (char.ToLower(axis))
                     {
                         case 'x':
@@ -168,7 +173,7 @@ namespace Library
                             GridDerivativeKernelZ(previous, h, partial.grid);
                             break;
                     }
-                    previous=partial.grid;
+                    axisDeriv[partial.derivative]=partial.grid;
                 }
             }
             
