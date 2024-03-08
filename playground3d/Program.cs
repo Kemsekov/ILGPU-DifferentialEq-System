@@ -26,9 +26,11 @@ var n = 1000;
 var t0 = 1;
 
 string[] derivatives = [
-    "5*(v0_xx+v0_yy)", //x'=f0=xy-zt-sqrt(t)
+    "c0*(v0_xx+v0_yy)+c1", //x'=f0=xy-zt-sqrt(t)
 ];
 string[] partial = ["v0_xx", "v0_yy"];
+string[] constants = ["c0","c1"];
+double[] constantsValues = [4.1,0];
 //grid step size
 var h = 0.1;
 var xsize = 100;
@@ -56,8 +58,8 @@ foreach (var init in initialValues)
 // DerivativeMethod.RungeKutta methods to compute derivatives
 
 // using var gpuSolver = new GpuDiffEqSystemSolver(derivatives,DerivativeMethod.ImprovedEuler);
-var gpuSolver = new GpuDiffEqSystemSolver3D(derivatives, DerivativeMethod.RungeKutta, partial);
-var cpuSolver = new CpuDiffEqSystemSolver3D(derivatives, DerivativeMethod.RungeKuttaCpu, partial);
+var gpuSolver = new GpuDiffEqSystemSolver3D(derivatives, DerivativeMethod.RungeKutta, partial,constants);
+var cpuSolver = new CpuDiffEqSystemSolver3D(derivatives, DerivativeMethod.RungeKuttaCpu, partial,constants);
 
 var solver = gpuSolver;
 // choose different versions of derivative computation algorithms
@@ -65,7 +67,8 @@ var solver = gpuSolver;
 
 solver.CompileKernel();
 
-var solutions = solver.EnumerateSolutionsRaw(initialValues, dt, t0, h, 1, 2, 3);
+var solutionsObj = solver.Solutions(initialValues, dt, t0, h, 1, 2, 3,constantsValues);
+var solutions = solutionsObj.EnumerateSolutions();
 solutions.First();//initialize 
 
 var timer = new Stopwatch();

@@ -6,15 +6,18 @@ using System.Threading;
 using System.Threading.Tasks;
 using ILGPU;
 using ILGPU.Runtime;
+using Array1D=ILGPU.Runtime.MemoryBuffer1D<double, ILGPU.Stride1D.Dense>;
 using Array3DView = ILGPU.Runtime.ArrayView3D<double, ILGPU.Stride3D.DenseXY>;
+using Array1DView = ILGPU.Runtime.ArrayView1D<double, ILGPU.Stride1D.Dense>;
 using Array3D = ILGPU.Runtime.MemoryBuffer3D<double, ILGPU.Stride3D.DenseXY>;
 using static Library.DerivativeMethod;
 using GridDerivativeMethod=System.Action<ILGPU.Index1D, float, ILGPU.Runtime.ArrayView3D<double, ILGPU.Stride3D.DenseXY>, double, ILGPU.Runtime.ArrayView3D<double, ILGPU.Stride3D.DenseXY>>;
-using VariableGridUpdateKernelMethod = System.Action<ILGPU.Index2D, Library.Jagged3D_10, Library.Jagged3D_10, Library.Jagged3D_60, double, double, double, double, double, double>;
+using VariableGridUpdateKernelMethod = System.Action<ILGPU.Index2D, Library.Jagged3D_10, Library.Jagged3D_10, Library.Jagged3D_60,ILGPU.Runtime.ArrayView1D<double, ILGPU.Stride1D.Dense>, double, double, double, double, double, double>;
 namespace Library
 {
     public class GpuDiffEqSystemSolver3D : IDisposable
     {
+        private Dictionary<string, int> _constantNameToId;
         private int size;
         private int derivativesSize;
         /// <summary>
@@ -44,8 +47,12 @@ namespace Library
         /// v0_xxyzz - valid <br/>
         /// v0_zyxz - invalid <br/>
         /// </param>
-        public GpuDiffEqSystemSolver3D(string[] derivatives, string derivativeMethod, string[] partialDerivatives)
+        public GpuDiffEqSystemSolver3D(string[] derivatives, string derivativeMethod, string[] partialDerivatives,string[]? constants = null)
         {
+            
+            constants ??= new string[] { };
+            _constantNameToId = constants.Select((i, v) => (i, v)).ToDictionary(v => v.i, v => v.v);
+            
             size = derivatives.Length;
             // map each deriv
             // v<i>_[x|y|z]+ to unique number
@@ -82,6 +89,10 @@ namespace Library
                 {
                     d = d.Replace(pair.Key, $"v[{pair.Value + size}]");
                 }
+                foreach (var c in _constantNameToId)
+                {
+                    d = d.Replace(c.Key, $"v[{size + derivativesSize + c.Value}]");
+                }
                 d = d.Replace("X", $"v[{^1}]");
                 d = d.Replace("Y", $"v[{^2}]");
                 d = d.Replace("Z", $"v[{^3}]");
@@ -109,7 +120,7 @@ namespace Library
             }";
 
             var updateVariableMethod =
-            @"static void VariableGridUpdateKernel(ILGPU.Index2D point, Library.Jagged3D_10 p, Library.Jagged3D_10 v, Library.Jagged3D_60 derivsPlaced, double dt, double t, double h, double x0, double y0, double z0)
+            @"static void VariableGridUpdateKernel(ILGPU.Index2D point, Library.Jagged3D_10 p, Library.Jagged3D_10 v, Library.Jagged3D_60 derivsPlaced,ILGPU.Runtime.ArrayView1D<double, ILGPU.Stride1D.Dense> constants, double dt, double t, double h, double x0, double y0, double z0)
             {
             //x is grid x coordinate
             //i is variable index v0, v1 ...
@@ -123,6 +134,7 @@ namespace Library
 
             var prev = new double[" + size + derivativesSize + 3 + @"];
             var newV = new double[" + (size+1) + @"];
+            var constantsSize=constants.Extent.X;
             for (int j = 0; j < size1; j++)
             for (int k = 0; k < size2; k++)
             {
@@ -131,6 +143,8 @@ namespace Library
                     prev[w] = p[w][x, j, k];
                 for (int w = 0; w < derivativesSize; w++)
                     prev[w + size] = derivsPlaced[w][x, j, k];
+                for (int w = 0; w < constantsSize; w++)
+                    prev[w + size+derivativesSize] = constants[w];
                 prev[^1] = x * h + x0;
                 prev[^2] = j * h + y0;
                 prev[^3] = k * h + z0;
@@ -143,11 +157,11 @@ namespace Library
             }";
             var code =
             @"
-            System.Action<ILGPU.Index2D, Library.Jagged3D_10, Library.Jagged3D_10, Library.Jagged3D_60, double, double, double, double, double, double>
+            System.Action<ILGPU.Index2D, Library.Jagged3D_10, Library.Jagged3D_10, Library.Jagged3D_60,ILGPU.Runtime.ArrayView1D<double, ILGPU.Stride1D.Dense>, double, double, double, double, double, double>
             Execute(ILGPU.Runtime.Accelerator accelerator)
             {
                 return ILGPU.Runtime.KernelLoaders
-                    .LoadAutoGroupedStreamKernel<ILGPU.Index2D, Library.Jagged3D_10, Library.Jagged3D_10, Library.Jagged3D_60, double, double, double, double, double, double>
+                    .LoadAutoGroupedStreamKernel<ILGPU.Index2D, Library.Jagged3D_10, Library.Jagged3D_10, Library.Jagged3D_60,ILGPU.Runtime.ArrayView1D<double, ILGPU.Stride1D.Dense>, double, double, double, double, double, double>
                         (accelerator,VariableGridUpdateKernel);
             }
             " + kernelCode + updateVariableMethod;
@@ -171,21 +185,13 @@ namespace Library
         {
             var _ = loadedKernel.Value;
         }
-        public IEnumerable<(double[][,,] Values, double Time)> EnumerateSolutions(double[][,,] initialValues, double dt, double t0, double h, double x0, double y0, double z0){
-            var buffer = initialValues.Select(grid => new double[grid.GetLength(0), grid.GetLength(1), grid.GetLength(2)]).ToArray();
-            
-            foreach(var (values,time) in EnumerateSolutionsRaw(initialValues,dt,t0,h,x0,y0,z0)){
-                Move(buffer,values);
-                yield return (buffer,time);
-            }
-        }
 
         /// <param name="initialValues">3d grid initial values for each variable</param>
         /// <param name="dt">time step size</param>
         /// <param name="t0">time zero</param>
         /// <param name="h">grid step size</param>
         /// <returns></returns>
-        public IEnumerable<(Array3DView[] Values, double Time)> EnumerateSolutionsRaw(double[][,,] initialValues, double dt, double t0, double h, double x0, double y0, double z0)
+        public SolutionsGpu3D Solutions(double[][,,] initialValues, double dt, double t0, double h, double x0, double y0, double z0,double[]? constants = null)
         {
             var size0 = initialValues[0].GetLength(0);
             var size1 = initialValues[0].GetLength(1);
@@ -197,33 +203,21 @@ namespace Library
             var P = initialValues.Select(grid => accelerator.Allocate3DDenseXY(grid)).ToArray();
             //new values of x,y,z...
             var V = initialValues.Select(grid => accelerator.Allocate3DDenseXY<double>((grid.GetLength(0), grid.GetLength(1), grid.GetLength(2)))).ToArray();
-            yield return (P.Select(v=>v.View).ToArray(), t0);
-
             //derivatives grid
             //so grid for derivative v1_xy can be found at
             //derivatives[1].Find(v=>v.derivative=="xy")
             Dictionary<int, (string derivative, Array3D grid)[]> derivatives = _partial.ToDictionary(a => a.Key, a => a.Value.Select(derivative => (derivative, accelerator.Allocate3DDenseXY<double>((size0, size1, size2)))).ToArray());
 
-            var pJagged = new Jagged3D_10(P);
-            var vJagged = new Jagged3D_10(V);
-            for (int i = 1; ; i++)
-            {
-                var t = t0 + i * dt;
-                _Kernel(t, pJagged, vJagged, dt, derivatives, h, x0, y0, z0);
-                yield return (V.Select(v=>v.View).ToArray(), t);
-                (pJagged, vJagged) = (vJagged, pJagged);
-            }
+            if(constants is null)
+                constants=new double[_constantNameToId.Count];
+            if(constants.Length!=this._constantNameToId.Count)
+                throw new ArgumentException("Constants array must be length "+this._constantNameToId.Count);
+
+            var constantsArr = accelerator.Allocate1D<double>(constants);
+            return new SolutionsGpu3D(_Kernel,derivatives,P,V,dt,t0,h,x0,y0,z0,constantsArr);
         }
 
-        private static void Move(double[][,,] buffer, Array3DView[] P)
-        {
-            for (int i = 0; i < P.Length; i++)
-            {
-                P[i].CopyToCPU(buffer[i]);
-            }
-        }
-
-        private void _Kernel(double t, Jagged3D_10 p, Jagged3D_10 v, double dt, Dictionary<int, (string derivative, Array3D grid)[]> derivatives, double h, double x0, double y0, double z0)
+        private void _Kernel(double t, Jagged3D_10 p, Jagged3D_10 v,Array1DView constants, double dt, Dictionary<int, (string derivative, Array3D grid)[]> derivatives, double h, double x0, double y0, double z0)
         {
 
             //for each variable update it's grid
@@ -251,7 +245,7 @@ namespace Library
                     axisDeriv[partial.derivative] = partial.grid;
                 }
             }
-            loadedKernel.Value(new Index2D((int)size0, size), p, v, new Jagged3D_60(derivsPlaced), dt, t, h, x0, y0, z0);
+            loadedKernel.Value(new Index2D((int)size0, size), p, v, new Jagged3D_60(derivsPlaced),constants, dt, t, h, x0, y0, z0);
         }
 
         delegate void GridDerivativeKernelMethod(Index1D i, Array3DView previous, double h, Array3DView grid);

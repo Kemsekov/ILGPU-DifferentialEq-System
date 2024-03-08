@@ -11,6 +11,7 @@ namespace Library
 {
     public class CpuDiffEqSystemSolver3D
     {
+        private Dictionary<string, int> _constantNameToId;
         private int size;
         private int derivativesSize;
         private DerivMethod derivativeMethod;
@@ -43,8 +44,11 @@ namespace Library
         /// v0_xxyzz - valid <br/>
         /// v0_zyxz - invalid <br/>
         /// </param>
-        public CpuDiffEqSystemSolver3D(string[] derivatives, DerivMethod derivativeMethod, string[] partialDerivatives)
+        public CpuDiffEqSystemSolver3D(string[] derivatives, DerivMethod derivativeMethod, string[] partialDerivatives,string[]? constants = null)
         {
+            constants ??= new string[] { };
+            _constantNameToId = constants.Select((i, v) => (i, v)).ToDictionary(v => v.i, v => v.v);
+            
             size = derivatives.Length;
             // map each deriv
             // v<i>_[x|y|z]+ to unique number
@@ -79,6 +83,10 @@ namespace Library
                 foreach (var pair in _derivIndexMap)
                 {
                     d = d.Replace(pair.Key, $"v[{pair.Value+size}]");
+                }
+                foreach (var c in _constantNameToId)
+                {
+                    d = d.Replace(c.Key, $"v[{size + derivativesSize + c.Value}]");
                 }
                 d = d.Replace("X", $"v[{^1}]");
                 d = d.Replace("Y", $"v[{^2}]");
@@ -115,7 +123,7 @@ namespace Library
         /// <param name="t0">time zero</param>
         /// <param name="h">grid step size</param>
         /// <returns></returns>
-        public IEnumerable<(double[][,,] Values, double Time)> EnumerateSolutions(double[][,,] initialValues, double dt, double t0, double h,double x0,double y0,double z0)
+        public SolutionsCpu3D Solutions(double[][,,] initialValues, double dt, double t0, double h,double x0,double y0,double z0, double[]? constants = null)
         {
             var size0 = initialValues[0].GetLength(0);
             var size1 = initialValues[0].GetLength(1);
@@ -124,24 +132,19 @@ namespace Library
             var P = initialValues;
             //new values of x,y,z...
             var V = initialValues.Select(grid => new double[grid.GetLength(0), grid.GetLength(1), grid.GetLength(2)]).ToArray();
-
-            yield return (P, t0);
-
             //derivatives grid
             //so grid for derivative v1_xy can be found at
             //derivatives[1].Find(v=>v.derivative=="xy")
             Dictionary<int, (string derivative, double[,,] grid)[]> derivatives = _partial.ToDictionary(a => a.Key, a => a.Value.Select(derivative => (derivative, new double[size0, size1, size2])).ToArray());
-
-            for (int i = 1; ; i++)
-            {
-                var t = t0 + i * dt;
-                _Kernel(t, P, V, dt, derivatives, h,x0,y0,z0);
-                yield return (V, t);
-                (P, V) = (V, P);
-            }
+            if(constants is null)
+                constants=new double[_constantNameToId.Count];
+            if(constants.Length!=this._constantNameToId.Count)
+                throw new ArgumentException("Constants array must be length "+this._constantNameToId.Count);
+            
+            return new SolutionsCpu3D(_Kernel,derivatives,P,V,dt,t0,h,x0,y0,z0,constants);
         }
 
-        private void _Kernel(double t, double[][,,] p, double[][,,] v, double dt, Dictionary<int, (string derivative, double[,,] grid)[]> derivatives, double h,double x0,double y0,double z0)
+        private void _Kernel(double t, double[][,,] p, double[][,,] v,double[] constants, double dt, Dictionary<int, (string derivative, double[,,] grid)[]> derivatives, double h,double x0,double y0,double z0)
         {
 
             var derivsPlaced = new double[derivativesSize][,,];
@@ -179,17 +182,18 @@ namespace Library
             var funcs = functions.Value;
             //for each variable update it's grid
             for(int i = 0;i<funcs.Length;i++)
-                VariableGridUpdateKernel(i,p,v,dt,t,derivsPlaced,h,x0,y0,z0);
+                VariableGridUpdateKernel(i,p,v,constants,dt,t,derivsPlaced,h,x0,y0,z0);
         }
 
-        private void VariableGridUpdateKernel(int variableIndex,double[][,,] p, double[][,,] v, double dt,double t, double[][,,] derivsPlaced,double h,double x0,double y0,double z0)
+        private void VariableGridUpdateKernel(int variableIndex,double[][,,] p, double[][,,] v,double[] constants, double dt,double t, double[][,,] derivsPlaced,double h,double x0,double y0,double z0)
         {
             var size0 = p[0].GetLength(0);
             var size1 = p[0].GetLength(1);
             var size2 = p[0].GetLength(2);
             var funcs = functions.Value;
             
-            var inputTL =  new ThreadLocal<double[]>(()=>new double[size+derivativesSize+3]);
+            var constantsSize = _constantNameToId.Count;
+            var inputTL =  new ThreadLocal<double[]>(()=>new double[size+derivativesSize+constantsSize+3]);
             Parallel.For(0,size0,i=>{
                 var input=inputTL.Value;
                 for (int j = 0; j < size1; j++)
@@ -199,6 +203,8 @@ namespace Library
                         input[w]=p[w][i,j,k];
                     for(int w = 0;w<derivativesSize;w++)
                         input[w+size]=derivsPlaced[w][i,j,k];
+                    for(int w = 0;w<constantsSize;w++)
+                        input[w+size+derivativesSize]=constants[w];
                     input[^1]=i*h+x0;
                     input[^2]=j*h+y0;
                     input[^3]=k*h+z0;
