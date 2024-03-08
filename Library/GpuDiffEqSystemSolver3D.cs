@@ -13,7 +13,7 @@ using GridDerivativeMethod=System.Action<ILGPU.Index1D, float, ILGPU.Runtime.Arr
 using VariableGridUpdateKernelMethod = System.Action<ILGPU.Index2D, Library.Jagged3D_10, Library.Jagged3D_10, Library.Jagged3D_60, double, double, double, double, double, double>;
 namespace Library
 {
-    public class GpuDiffEqSystemSolver3D : IDisposable, IDiffEqSolver3D
+    public class GpuDiffEqSystemSolver3D : IDisposable
     {
         private int size;
         private int derivativesSize;

@@ -91,19 +91,13 @@ namespace Library
         public static double DerivativeZ(int i, int j, int k, double h, double[,,] grid)
         {
             int size2 = grid.GetLength(2);
-            if (k > 1 && k < size2 - 2)
-                return CentralDifference4Order(
-                    h,
-                    grid[i, j, k + 1],
-                    grid[i, j, k + 2],
-                    grid[i, j, k - 1],
-                    grid[i, j, k - 2]
-                );
-                return CentralDifference(
-                    h,
-                    grid[i, j, (k + 1)%size2],
-                    grid[i, j, (size2+k - 1)%size2]
-                );
+            return CentralDifference4Order(
+                h,
+                grid[i, j, (k + 1)%size2],
+                grid[i, j, (k + 2)%size2],
+                grid[i, j, (size2+k - 1)%size2],
+                grid[i, j, (size2+k - 2)%size2]
+            );
         }
 
         /// <summary>
@@ -118,21 +112,14 @@ namespace Library
         public static double DerivativeY(int i, int j, int k, double h, double[,,] grid)
         {
             int size1 = grid.GetLength(1);
-            if (j > 1 && j < size1 - 2)
-                return CentralDifference4Order(
-                    h,
-                    grid[i, j + 1, k],
-                    grid[i, j + 2, k],
-                    grid[i, j - 1, k],
-                    grid[i, j - 2, k]
-                );
-            
-                return CentralDifference(
-                    h,
-                    grid[i, (j + 1)%size1, k],
-                    grid[i, (size1+j - 1)%size1, k]
-                );
-            
+            return CentralDifference4Order(
+                h,
+                grid[i, (j + 1) % size1, k],
+                grid[i, (j + 2) % size1, k],
+                grid[i, (size1 + j - 1) % size1, k],
+                grid[i, (size1 + j - 2) % size1, k]
+            );
+
         }
 
         /// <summary>
@@ -147,19 +134,14 @@ namespace Library
         public static double DerivativeX(int i, int j, int k, double h, double[,,] grid)
         {
             var size0 = grid.GetLength(0);
-            if (i > 1 && i < size0 - 2)
-                return CentralDifference4Order(
-                    h,
-                    grid[i + 1, j, k],
-                    grid[i + 2, j, k],
-                    grid[i - 1, j, k],
-                    grid[i - 2, j, k]
-                );
-                return CentralDifference(
-                    h,
-                    grid[(i + 1)%size0, j, k],
-                    grid[(size0+i - 1)%size0, j, k]
-                );
+            return CentralDifference4Order(
+                h,
+                grid[(i + 1) % size0, j, k],
+                grid[(i + 2) % size0, j, k],
+                grid[(size0 + i - 1) % size0, j, k],
+                grid[(size0 + i - 2) % size0, j, k]
+            );
+
         }
 
         /// <summary>
@@ -174,19 +156,14 @@ namespace Library
         public static double DerivativeZ(int i, int j, int k, double h, Array3DView grid)
         {
             long size2 = grid.Extent.Y;
-            if (k > 1 && k < size2 - 2)
-                return CentralDifference4Order(
-                    h,
-                    grid[i, j, k + 1],
-                    grid[i, j, k + 2],
-                    grid[i, j, k - 1],
-                    grid[i, j, k - 2]
-                );
-                return CentralDifference(
-                    h,
-                    grid[i, j, (k + 1)%size2],
-                    grid[i, j, (size2+k - 1)%size2]
-                );
+            return CentralDifference4Order(
+                h,
+                grid[i, j, (k + 1) % size2],
+                grid[i, j, (k + 2) % size2],
+                grid[i, j, (size2 + k - 1) % size2],
+                grid[i, j, (size2 + k - 2) % size2]
+            );
+
         }
 
         /// <summary>
@@ -201,21 +178,14 @@ namespace Library
         public static double DerivativeY(int i, int j, int k, double h, Array3DView grid)
         {
             long size1 = grid.Extent.Y;
-            if (j > 1 && j < size1 - 2)
-                return CentralDifference4Order(
-                    h,
-                    grid[i, j + 1, k],
-                    grid[i, j + 2, k],
-                    grid[i, j - 1, k],
-                    grid[i, j - 2, k]
-                );
-            
-                return CentralDifference(
-                    h,
-                    grid[i, (j + 1)%size1, k],
-                    grid[i, (size1+j - 1)%size1, k]
-                );
-            
+            return CentralDifference4Order(
+                h,
+                grid[i, (j + 1) % size1, k],
+                grid[i, (j + 2) % size1, k],
+                grid[i, (size1 + j - 1) % size1, k],
+                grid[i, (size1 + j - 2) % size1, k]
+            );
+
         }
 
         /// <summary>
@@ -230,19 +200,14 @@ namespace Library
         public static double DerivativeX(int i, int j, int k, double h, Array3DView grid)
         {
             var size0 = grid.Extent.Y;
-            if (i > 1 && i < size0 - 2)
-                return CentralDifference4Order(
-                    h,
-                    grid[i + 1, j, k],
-                    grid[i + 2, j, k],
-                    grid[i - 1, j, k],
-                    grid[i - 2, j, k]
-                );
-                return CentralDifference(
-                    h,
-                    grid[(i + 1)%size0, j, k],
-                    grid[(size0+i - 1)%size0, j, k]
-                );
+            return CentralDifference4Order(
+                h,
+                grid[(i + 1) % size0, j, k],
+                grid[(i + 2) % size0, j, k],
+                grid[(size0 + i - 1) % size0, j, k],
+                grid[(size0 + i - 2) % size0, j, k]
+            );
+
         }
 
         static double BackwardDifference3Points(double h, double u, double u_m, double u_mm)

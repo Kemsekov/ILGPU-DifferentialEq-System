@@ -4,24 +4,34 @@ using System.Linq;
 using ILGPU;
 using ILGPU.Runtime;
 using KernelType = System.Action<ILGPU.Index1D, double, double, ILGPU.ArrayView<double>, ILGPU.ArrayView<double>>;
+
 namespace Library
 {
-
-    public class GpuDiffEqSystemSolver : IDisposable, IDiffEqSolver
+    public class GpuDiffEqSystemSolver : IDisposable
     {
-        private Context context;
-        private Accelerator accelerator;
+        Dictionary<string, int> _constantNameToId;
+        Context context;
+        Accelerator accelerator;
         private int size;
         private Lazy<KernelType> loadedKernel;
         /// <param name="derivatives">A list of derivatives definitions</param>
+        /// <param name="constants">A list of constants names used in derivative definitions</param>
         /// <param name="derivativeMethod">Some of <see cref="DerivativeMethod"/> </param>
-        public GpuDiffEqSystemSolver(string[] derivatives, string derivativeMethod)
+        public GpuDiffEqSystemSolver(string[] derivatives, string derivativeMethod,string[]? constants = null)
         {
+            constants ??= new string[]{};
+            _constantNameToId = constants.Select((i,v)=>(i,v)).ToDictionary(v=>v.i,v=>v.v);
             // Initialize ILGPU.
             context = Context.CreateDefault();
             accelerator = context.GetPreferredDevice(preferCPU: false)
                                       .CreateAccelerator(context);
             size = derivatives.Length;
+            derivatives=derivatives.Select(d=>{
+                foreach(var c in _constantNameToId){
+                    d=d.Replace(c.Key,$"v[{size+c.Value}]");
+                }
+                return d;
+            }).ToArray();
             var derivFunctions =
                 derivatives.Select((v, i) => $"double f{i}(double t,ILGPU.ArrayView<double> v)=>{v};")
                 .ToArray();
@@ -69,25 +79,17 @@ namespace Library
             accelerator.Dispose();
             context.Dispose();
         }
-        public IEnumerable<(double[] Values, double Time)> EnumerateSolutions(double[] initialValues, double dt, double t0)
+
+        public SolutionsGpu Solutions(double[] initialValues, double dt, double t0,double[]? constants = null)
         {
             var kernel = loadedKernel.Value;
             //previous values of x,y,z...
-            var P = accelerator.Allocate1D<double>(size);
-            P.CopyFromCPU(initialValues);
+            var P = accelerator.Allocate1D<double>(size+_constantNameToId.Count);
+            P.View.SubView(0,size).CopyFromCPU(initialValues);
             //new values of x,y,z...
-            var V = accelerator.Allocate1D<double>(size);
+            var V = accelerator.Allocate1D<double>(size+_constantNameToId.Count);
             
-            yield return (P.GetAsArray1D(), t0);
-
-            for (int i = 1; ; i++)
-            {
-                var t = t0 + i * dt;
-                kernel((Index1D)size, t, dt, P.View, V.View);
-                accelerator.Synchronize();
-                yield return (V.GetAsArray1D(), t);
-                (P, V) = (V, P);
-            }
+            return new SolutionsGpu(size,_constantNameToId.Count,accelerator,P,V,kernel,dt,t0,constants);
         }
     }
 }
