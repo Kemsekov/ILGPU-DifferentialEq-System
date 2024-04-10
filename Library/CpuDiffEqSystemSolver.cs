@@ -38,6 +38,7 @@ namespace Library
                 {
                     d = d.Replace(c.Key, $"v[{size + c.Value}]");
                 }
+                d = d.Replace("Math", "System.Math");
                 return d;
             }).ToArray();
             

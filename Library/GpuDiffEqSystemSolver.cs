@@ -30,6 +30,7 @@ namespace Library
                 foreach(var c in _constantNameToId){
                     d=d.Replace(c.Key,$"v[{size+c.Value}]");
                 }
+                d = d.Replace("Math", "System.Math");
                 return d;
             }).ToArray();
             var derivFunctions =
