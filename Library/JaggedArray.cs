@@ -1,3 +1,4 @@
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -5,36 +6,752 @@ using System.Linq;
 using System.Security.Principal;
 using Array3DView=ILGPU.Runtime.ArrayView3D<double, ILGPU.Stride3D.DenseXY>;
 using Array3D=ILGPU.Runtime.MemoryBuffer3D<double, ILGPU.Stride3D.DenseXY>;
-
 namespace Library
 {
     /// <summary>
-    /// 100 length fixed array of Array3DView
+    /// Sick statically-generated jagged 3d array for ilgpu
     /// </summary>
-    public unsafe struct Jagged3D_100{
-        const int MaxSize = 100;
-        //Array3DView size is 56 bytes
-        const int Array3DViewSize = 56;
-        fixed byte InnerStructs[Array3DViewSize * MaxSize]; // An array of InnerUnmanagedStruct
-        public Jagged3D_100(IEnumerable<Array3D> arrays) : this(arrays.Select(v=>v.View).ToArray()){}
-        public Jagged3D_100(IEnumerable<Array3DView> arrays) : this(arrays.ToArray()){}
-        public Jagged3D_100(Array3DView[] arrays)
+    public struct Jagged3D_10
+    {
+        public const int MaxSize=10;
+        public Array3DView A0;
+        public Array3DView A1;
+        public Array3DView A2;
+        public Array3DView A3;
+        public Array3DView A4;
+        public Array3DView A5;
+        public Array3DView A6;
+        public Array3DView A7;
+        public Array3DView A8;
+        public Array3DView A9;
+        public Array3DView A10;
+        // public Array3DView A11;
+        // public Array3DView A12;
+        // public Array3DView A13;
+        // public Array3DView A14;
+        // public Array3DView A15;
+        // public Array3DView A16;
+        // public Array3DView A17;
+        // public Array3DView A18;
+        // public Array3DView A19;
+        // public Array3DView A20;
+        // public Array3DView A21;
+        // public Array3DView A22;
+        // public Array3DView A23;
+        // public Array3DView A24;
+        // public Array3DView A25;
+        // public Array3DView A26;
+        // public Array3DView A27;
+        // public Array3DView A28;
+        // public Array3DView A29;
+        // public Array3DView A30;
+        // public Array3DView A31;
+        // public Array3DView A32;
+        // public Array3DView A33;
+        // public Array3DView A34;
+        // public Array3DView A35;
+        // public Array3DView A36;
+        // public Array3DView A37;
+        // public Array3DView A38;
+        // public Array3DView A39;
+        // public Array3DView A40;
+        // public Array3DView A41;
+        // public Array3DView A42;
+        // public Array3DView A43;
+        // public Array3DView A44;
+        // public Array3DView A45;
+        // public Array3DView A46;
+        // public Array3DView A47;
+        // public Array3DView A48;
+        // public Array3DView A49;
+        // public Array3DView A50;
+        // public Array3DView A51;
+        // public Array3DView A52;
+        // public Array3DView A53;
+        // public Array3DView A54;
+        // public Array3DView A55;
+        // public Array3DView A56;
+        // public Array3DView A57;
+        // public Array3DView A58;
+        // public Array3DView A59;
+        // public Array3DView A60;
+        // public Array3DView A61;
+        // public Array3DView A62;
+        // public Array3DView A63;
+        // public Array3DView A64;
+        // public Array3DView A65;
+        // public Array3DView A66;
+        // public Array3DView A67;
+        // public Array3DView A68;
+        // public Array3DView A69;
+        // public Array3DView A70;
+        // public Array3DView A71;
+        // public Array3DView A72;
+        // public Array3DView A73;
+        // public Array3DView A74;
+        // public Array3DView A75;
+        // public Array3DView A76;
+        // public Array3DView A77;
+        // public Array3DView A78;
+        // public Array3DView A79;
+        // public Array3DView A80;
+        // public Array3DView A81;
+        // public Array3DView A82;
+        // public Array3DView A83;
+        // public Array3DView A84;
+        public Jagged3D_10(IEnumerable<Array3D> arrays) : this(arrays.Select(v=>v.View).ToArray()){}
+        public Jagged3D_10(IEnumerable<Array3DView> arrays) : this(arrays.ToArray()){}
+        public Jagged3D_10(Array3DView[] arrays)
         {
-            if(arrays.Length>=MaxSize)
-                throw new ArgumentException($"Cannot create jagged array with more than {MaxSize} elements. \nFor some reason ilgpu does not support structs with more than {MaxSize} fields.");
-            for(int i = 0;i<MaxSize;i++)
-                this[i]=arrays[i];
+            if(arrays.Length>MaxSize)
+                throw new ArgumentException("Cannot create jagged array with more than 85 elements. \nFor some reason ilgpu does not support structs with more than 85 fields.");
+            A0 = default(Array3DView);
+            A1 = default(Array3DView);
+            A2 = default(Array3DView);
+            A3 = default(Array3DView);
+            A4 = default(Array3DView);
+            A5 = default(Array3DView);
+            A6 = default(Array3DView);
+            A7 = default(Array3DView);
+            A8 = default(Array3DView);
+            A9 = default(Array3DView);
+            A10 = default(Array3DView);
+            // A11 = default(Array3DView);
+            // A12 = default(Array3DView);
+            // A13 = default(Array3DView);
+            // A14 = default(Array3DView);
+            // A15 = default(Array3DView);
+            // A16 = default(Array3DView);
+            // A17 = default(Array3DView);
+            // A18 = default(Array3DView);
+            // A19 = default(Array3DView);
+            // A20 = default(Array3DView);
+            // A21 = default(Array3DView);
+            // A22 = default(Array3DView);
+            // A23 = default(Array3DView);
+            // A24 = default(Array3DView);
+            // A25 = default(Array3DView);
+            // A26 = default(Array3DView);
+            // A27 = default(Array3DView);
+            // A28 = default(Array3DView);
+            // A29 = default(Array3DView);
+            // A30 = default(Array3DView);
+            // A31 = default(Array3DView);
+            // A32 = default(Array3DView);
+            // A33 = default(Array3DView);
+            // A34 = default(Array3DView);
+            // A35 = default(Array3DView);
+            // A36 = default(Array3DView);
+            // A37 = default(Array3DView);
+            // A38 = default(Array3DView);
+            // A39 = default(Array3DView);
+            // A40 = default(Array3DView);
+            // A41 = default(Array3DView);
+            // A42 = default(Array3DView);
+            // A43 = default(Array3DView);
+            // A44 = default(Array3DView);
+            // A45 = default(Array3DView);
+            // A46 = default(Array3DView);
+            // A47 = default(Array3DView);
+            // A48 = default(Array3DView);
+            // A49 = default(Array3DView);
+            // A50 = default(Array3DView);
+            // A51 = default(Array3DView);
+            // A52 = default(Array3DView);
+            // A53 = default(Array3DView);
+            // A54 = default(Array3DView);
+            // A55 = default(Array3DView);
+            // A56 = default(Array3DView);
+            // A57 = default(Array3DView);
+            // A58 = default(Array3DView);
+            // A59 = default(Array3DView);
+            // A60 = default(Array3DView);
+            // A61 = default(Array3DView);
+            // A62 = default(Array3DView);
+            // A63 = default(Array3DView);
+            // A64 = default(Array3DView);
+            // A65 = default(Array3DView);
+            // A66 = default(Array3DView);
+            // A67 = default(Array3DView);
+            // A68 = default(Array3DView);
+            // A69 = default(Array3DView);
+            // A70 = default(Array3DView);
+            // A71 = default(Array3DView);
+            // A72 = default(Array3DView);
+            // A73 = default(Array3DView);
+            // A74 = default(Array3DView);
+            // A75 = default(Array3DView);
+            // A76 = default(Array3DView);
+            // A77 = default(Array3DView);
+            // A78 = default(Array3DView);
+            // A79 = default(Array3DView);
+            // A80 = default(Array3DView);
+            // A81 = default(Array3DView);
+            // A82 = default(Array3DView);
+            // A83 = default(Array3DView);
+            // A84 = default(Array3DView);
+            for (int i = 0; i < arrays.Length; i++)
+                this[i] = arrays[i];
         }
-        public ref Array3DView this[int index]
+        public Array3DView this[int index]
         {
-            get{
-                fixed (byte* ptr = InnerStructs)
+            get
+            {
+                switch (index)
                 {
-                    #pragma warning disable
-                    return ref ((Array3DView*)ptr)[index];
+                    case 0: return A0;
+                    case 1: return A1;
+                    case 2: return A2;
+                    case 3: return A3;
+                    case 4: return A4;
+                    case 5: return A5;
+                    case 6: return A6;
+                    case 7: return A7;
+                    case 8: return A8;
+                    case 9: return A9;
+                    case 10: return A10;
+                    // case 11: return A11;
+                    // case 12: return A12;
+                    // case 13: return A13;
+                    // case 14: return A14;
+                    // case 15: return A15;
+                    // case 16: return A16;
+                    // case 17: return A17;
+                    // case 18: return A18;
+                    // case 19: return A19;
+                    // case 20: return A20;
+                    // case 21: return A21;
+                    // case 22: return A22;
+                    // case 23: return A23;
+                    // case 24: return A24;
+                    // case 25: return A25;
+                    // case 26: return A26;
+                    // case 27: return A27;
+                    // case 28: return A28;
+                    // case 29: return A29;
+                    // case 30: return A30;
+                    // case 31: return A31;
+                    // case 32: return A32;
+                    // case 33: return A33;
+                    // case 34: return A34;
+                    // case 35: return A35;
+                    // case 36: return A36;
+                    // case 37: return A37;
+                    // case 38: return A38;
+                    // case 39: return A39;
+                    // case 40: return A40;
+                    // case 41: return A41;
+                    // case 42: return A42;
+                    // case 43: return A43;
+                    // case 44: return A44;
+                    // case 45: return A45;
+                    // case 46: return A46;
+                    // case 47: return A47;
+                    // case 48: return A48;
+                    // case 49: return A49;
+                    // case 50: return A50;
+                    // case 51: return A51;
+                    // case 52: return A52;
+                    // case 53: return A53;
+                    // case 54: return A54;
+                    // case 55: return A55;
+                    // case 56: return A56;
+                    // case 57: return A57;
+                    // case 58: return A58;
+                    // case 59: return A59;
+                    // case 60: return A60;
+                    // case 61: return A61;
+                    // case 62: return A62;
+                    // case 63: return A63;
+                    // case 64: return A64;
+                    // case 65: return A65;
+                    // case 66: return A66;
+                    // case 67: return A67;
+                    // case 68: return A68;
+                    // case 69: return A69;
+                    // case 70: return A70;
+                    // case 71: return A71;
+                    // case 72: return A72;
+                    // case 73: return A73;
+                    // case 74: return A74;
+                    // case 75: return A75;
+                    // case 76: return A76;
+                    // case 77: return A77;
+                    // case 78: return A78;
+                    // case 79: return A79;
+                    // case 80: return A80;
+                    // case 81: return A81;
+                    // case 82: return A82;
+                    // case 83: return A83;
+                    // case 84: return A84;
+                    default: return this[index % MaxSize];
                 }
             }
-        }   
+            set
+            {
+                switch (index)
+                {
+                    case 0: A0 = value; break;
+                    case 1: A1 = value; break;
+                    case 2: A2 = value; break;
+                    case 3: A3 = value; break;
+                    case 4: A4 = value; break;
+                    case 5: A5 = value; break;
+                    case 6: A6 = value; break;
+                    case 7: A7 = value; break;
+                    case 8: A8 = value; break;
+                    case 9: A9 = value; break;
+                    case 10: A10 = value; break;
+                    // case 11: A11 = value; break;
+                    // case 12: A12 = value; break;
+                    // case 13: A13 = value; break;
+                    // case 14: A14 = value; break;
+                    // case 15: A15 = value; break;
+                    // case 16: A16 = value; break;
+                    // case 17: A17 = value; break;
+                    // case 18: A18 = value; break;
+                    // case 19: A19 = value; break;
+                    // case 20: A20 = value; break;
+                    // case 21: A21 = value; break;
+                    // case 22: A22 = value; break;
+                    // case 23: A23 = value; break;
+                    // case 24: A24 = value; break;
+                    // case 25: A25 = value; break;
+                    // case 26: A26 = value; break;
+                    // case 27: A27 = value; break;
+                    // case 28: A28 = value; break;
+                    // case 29: A29 = value; break;
+                    // case 30: A30 = value; break;
+                    // case 31: A31 = value; break;
+                    // case 32: A32 = value; break;
+                    // case 33: A33 = value; break;
+                    // case 34: A34 = value; break;
+                    // case 35: A35 = value; break;
+                    // case 36: A36 = value; break;
+                    // case 37: A37 = value; break;
+                    // case 38: A38 = value; break;
+                    // case 39: A39 = value; break;
+                    // case 40: A40 = value; break;
+                    // case 41: A41 = value; break;
+                    // case 42: A42 = value; break;
+                    // case 43: A43 = value; break;
+                    // case 44: A44 = value; break;
+                    // case 45: A45 = value; break;
+                    // case 46: A46 = value; break;
+                    // case 47: A47 = value; break;
+                    // case 48: A48 = value; break;
+                    // case 49: A49 = value; break;
+                    // case 50: A50 = value; break;
+                    // case 51: A51 = value; break;
+                    // case 52: A52 = value; break;
+                    // case 53: A53 = value; break;
+                    // case 54: A54 = value; break;
+                    // case 55: A55 = value; break;
+                    // case 56: A56 = value; break;
+                    // case 57: A57 = value; break;
+                    // case 58: A58 = value; break;
+                    // case 59: A59 = value; break;
+                    // case 60: A60 = value; break;
+                    // case 61: A61 = value; break;
+                    // case 62: A62 = value; break;
+                    // case 63: A63 = value; break;
+                    // case 64: A64 = value; break;
+                    // case 65: A65 = value; break;
+                    // case 66: A66 = value; break;
+                    // case 67: A67 = value; break;
+                    // case 68: A68 = value; break;
+                    // case 69: A69 = value; break;
+                    // case 70: A70 = value; break;
+                    // case 71: A71 = value; break;
+                    // case 72: A72 = value; break;
+                    // case 73: A73 = value; break;
+                    // case 74: A74 = value; break;
+                    // case 75: A75 = value; break;
+                    // case 76: A76 = value; break;
+                    // case 77: A77 = value; break;
+                    // case 78: A78 = value; break;
+                    // case 79: A79 = value; break;
+                    // case 80: A80 = value; break;
+                    // case 81: A81 = value; break;
+                    // case 82: A82 = value; break;
+                    // case 83: A83 = value; break;
+                    // case 84: A84 = value; break;
+                    default: this[index % MaxSize] = value; break;
+                }
+            }
+        }
     }
-    
+/// <summary>
+    /// Sick statically-generated jagged 3d array for ilgpu
+    /// </summary>
+    public struct Jagged3D_60
+    {
+        public const int MaxSize=60;
+        public Array3DView A0;
+        public Array3DView A1;
+        public Array3DView A2;
+        public Array3DView A3;
+        public Array3DView A4;
+        public Array3DView A5;
+        public Array3DView A6;
+        public Array3DView A7;
+        public Array3DView A8;
+        public Array3DView A9;
+        public Array3DView A10;
+        public Array3DView A11;
+        public Array3DView A12;
+        public Array3DView A13;
+        public Array3DView A14;
+        public Array3DView A15;
+        public Array3DView A16;
+        public Array3DView A17;
+        public Array3DView A18;
+        public Array3DView A19;
+        public Array3DView A20;
+        public Array3DView A21;
+        public Array3DView A22;
+        public Array3DView A23;
+        public Array3DView A24;
+        public Array3DView A25;
+        public Array3DView A26;
+        public Array3DView A27;
+        public Array3DView A28;
+        public Array3DView A29;
+        public Array3DView A30;
+        public Array3DView A31;
+        public Array3DView A32;
+        public Array3DView A33;
+        public Array3DView A34;
+        public Array3DView A35;
+        public Array3DView A36;
+        public Array3DView A37;
+        public Array3DView A38;
+        public Array3DView A39;
+        public Array3DView A40;
+        public Array3DView A41;
+        public Array3DView A42;
+        public Array3DView A43;
+        public Array3DView A44;
+        public Array3DView A45;
+        public Array3DView A46;
+        public Array3DView A47;
+        public Array3DView A48;
+        public Array3DView A49;
+        public Array3DView A50;
+        public Array3DView A51;
+        public Array3DView A52;
+        public Array3DView A53;
+        public Array3DView A54;
+        public Array3DView A55;
+        public Array3DView A56;
+        public Array3DView A57;
+        public Array3DView A58;
+        public Array3DView A59;
+        public Array3DView A60;
+        // public Array3DView A61;
+        // public Array3DView A62;
+        // public Array3DView A63;
+        // public Array3DView A64;
+        // public Array3DView A65;
+        // public Array3DView A66;
+        // public Array3DView A67;
+        // public Array3DView A68;
+        // public Array3DView A69;
+        // public Array3DView A70;
+        // public Array3DView A71;
+        // public Array3DView A72;
+        // public Array3DView A73;
+        // public Array3DView A74;
+        // public Array3DView A75;
+        // public Array3DView A76;
+        // public Array3DView A77;
+        // public Array3DView A78;
+        // public Array3DView A79;
+        // public Array3DView A80;
+        // public Array3DView A81;
+        // public Array3DView A82;
+        // public Array3DView A83;
+        // public Array3DView A84;
+        public Jagged3D_60(IEnumerable<Array3D> arrays) : this(arrays.Select(v=>v.View).ToArray()){}
+        public Jagged3D_60(IEnumerable<Array3DView> arrays) : this(arrays.ToArray()){}
+        public Jagged3D_60(Array3DView[] arrays)
+        {
+            if(arrays.Length>MaxSize)
+                throw new ArgumentException("Cannot create jagged array with more than 85 elements. \nFor some reason ilgpu does not support structs with more than 85 fields.");
+            A0 = default(Array3DView);
+            A1 = default(Array3DView);
+            A2 = default(Array3DView);
+            A3 = default(Array3DView);
+            A4 = default(Array3DView);
+            A5 = default(Array3DView);
+            A6 = default(Array3DView);
+            A7 = default(Array3DView);
+            A8 = default(Array3DView);
+            A9 = default(Array3DView);
+            A10 = default(Array3DView);
+            A11 = default(Array3DView);
+            A12 = default(Array3DView);
+            A13 = default(Array3DView);
+            A14 = default(Array3DView);
+            A15 = default(Array3DView);
+            A16 = default(Array3DView);
+            A17 = default(Array3DView);
+            A18 = default(Array3DView);
+            A19 = default(Array3DView);
+            A20 = default(Array3DView);
+            A21 = default(Array3DView);
+            A22 = default(Array3DView);
+            A23 = default(Array3DView);
+            A24 = default(Array3DView);
+            A25 = default(Array3DView);
+            A26 = default(Array3DView);
+            A27 = default(Array3DView);
+            A28 = default(Array3DView);
+            A29 = default(Array3DView);
+            A30 = default(Array3DView);
+            A31 = default(Array3DView);
+            A32 = default(Array3DView);
+            A33 = default(Array3DView);
+            A34 = default(Array3DView);
+            A35 = default(Array3DView);
+            A36 = default(Array3DView);
+            A37 = default(Array3DView);
+            A38 = default(Array3DView);
+            A39 = default(Array3DView);
+            A40 = default(Array3DView);
+            A41 = default(Array3DView);
+            A42 = default(Array3DView);
+            A43 = default(Array3DView);
+            A44 = default(Array3DView);
+            A45 = default(Array3DView);
+            A46 = default(Array3DView);
+            A47 = default(Array3DView);
+            A48 = default(Array3DView);
+            A49 = default(Array3DView);
+            A50 = default(Array3DView);
+            A51 = default(Array3DView);
+            A52 = default(Array3DView);
+            A53 = default(Array3DView);
+            A54 = default(Array3DView);
+            A55 = default(Array3DView);
+            A56 = default(Array3DView);
+            A57 = default(Array3DView);
+            A58 = default(Array3DView);
+            A59 = default(Array3DView);
+            A60 = default(Array3DView);
+            // A61 = default(Array3DView);
+            // A62 = default(Array3DView);
+            // A63 = default(Array3DView);
+            // A64 = default(Array3DView);
+            // A65 = default(Array3DView);
+            // A66 = default(Array3DView);
+            // A67 = default(Array3DView);
+            // A68 = default(Array3DView);
+            // A69 = default(Array3DView);
+            // A70 = default(Array3DView);
+            // A71 = default(Array3DView);
+            // A72 = default(Array3DView);
+            // A73 = default(Array3DView);
+            // A74 = default(Array3DView);
+            // A75 = default(Array3DView);
+            // A76 = default(Array3DView);
+            // A77 = default(Array3DView);
+            // A78 = default(Array3DView);
+            // A79 = default(Array3DView);
+            // A80 = default(Array3DView);
+            // A81 = default(Array3DView);
+            // A82 = default(Array3DView);
+            // A83 = default(Array3DView);
+            // A84 = default(Array3DView);
+            for (int i = 0; i < arrays.Length; i++)
+                this[i] = arrays[i];
+        }
+        public Array3DView this[int index]
+        {
+            get
+            {
+                switch (index)
+                {
+                    case 0: return A0;
+                    case 1: return A1;
+                    case 2: return A2;
+                    case 3: return A3;
+                    case 4: return A4;
+                    case 5: return A5;
+                    case 6: return A6;
+                    case 7: return A7;
+                    case 8: return A8;
+                    case 9: return A9;
+                    case 10: return A10;
+                    case 11: return A11;
+                    case 12: return A12;
+                    case 13: return A13;
+                    case 14: return A14;
+                    case 15: return A15;
+                    case 16: return A16;
+                    case 17: return A17;
+                    case 18: return A18;
+                    case 19: return A19;
+                    case 20: return A20;
+                    case 21: return A21;
+                    case 22: return A22;
+                    case 23: return A23;
+                    case 24: return A24;
+                    case 25: return A25;
+                    case 26: return A26;
+                    case 27: return A27;
+                    case 28: return A28;
+                    case 29: return A29;
+                    case 30: return A30;
+                    case 31: return A31;
+                    case 32: return A32;
+                    case 33: return A33;
+                    case 34: return A34;
+                    case 35: return A35;
+                    case 36: return A36;
+                    case 37: return A37;
+                    case 38: return A38;
+                    case 39: return A39;
+                    case 40: return A40;
+                    case 41: return A41;
+                    case 42: return A42;
+                    case 43: return A43;
+                    case 44: return A44;
+                    case 45: return A45;
+                    case 46: return A46;
+                    case 47: return A47;
+                    case 48: return A48;
+                    case 49: return A49;
+                    case 50: return A50;
+                    case 51: return A51;
+                    case 52: return A52;
+                    case 53: return A53;
+                    case 54: return A54;
+                    case 55: return A55;
+                    case 56: return A56;
+                    case 57: return A57;
+                    case 58: return A58;
+                    case 59: return A59;
+                    case 60: return A60;
+                    // case 61: return A61;
+                    // case 62: return A62;
+                    // case 63: return A63;
+                    // case 64: return A64;
+                    // case 65: return A65;
+                    // case 66: return A66;
+                    // case 67: return A67;
+                    // case 68: return A68;
+                    // case 69: return A69;
+                    // case 70: return A70;
+                    // case 71: return A71;
+                    // case 72: return A72;
+                    // case 73: return A73;
+                    // case 74: return A74;
+                    // case 75: return A75;
+                    // case 76: return A76;
+                    // case 77: return A77;
+                    // case 78: return A78;
+                    // case 79: return A79;
+                    // case 80: return A80;
+                    // case 81: return A81;
+                    // case 82: return A82;
+                    // case 83: return A83;
+                    // case 84: return A84;
+                    default: return this[index % MaxSize];
+                }
+            }
+            set
+            {
+                switch (index)
+                {
+                    case 0: A0 = value; break;
+                    case 1: A1 = value; break;
+                    case 2: A2 = value; break;
+                    case 3: A3 = value; break;
+                    case 4: A4 = value; break;
+                    case 5: A5 = value; break;
+                    case 6: A6 = value; break;
+                    case 7: A7 = value; break;
+                    case 8: A8 = value; break;
+                    case 9: A9 = value; break;
+                    case 10: A10 = value; break;
+                    case 11: A11 = value; break;
+                    case 12: A12 = value; break;
+                    case 13: A13 = value; break;
+                    case 14: A14 = value; break;
+                    case 15: A15 = value; break;
+                    case 16: A16 = value; break;
+                    case 17: A17 = value; break;
+                    case 18: A18 = value; break;
+                    case 19: A19 = value; break;
+                    case 20: A20 = value; break;
+                    case 21: A21 = value; break;
+                    case 22: A22 = value; break;
+                    case 23: A23 = value; break;
+                    case 24: A24 = value; break;
+                    case 25: A25 = value; break;
+                    case 26: A26 = value; break;
+                    case 27: A27 = value; break;
+                    case 28: A28 = value; break;
+                    case 29: A29 = value; break;
+                    case 30: A30 = value; break;
+                    case 31: A31 = value; break;
+                    case 32: A32 = value; break;
+                    case 33: A33 = value; break;
+                    case 34: A34 = value; break;
+                    case 35: A35 = value; break;
+                    case 36: A36 = value; break;
+                    case 37: A37 = value; break;
+                    case 38: A38 = value; break;
+                    case 39: A39 = value; break;
+                    case 40: A40 = value; break;
+                    case 41: A41 = value; break;
+                    case 42: A42 = value; break;
+                    case 43: A43 = value; break;
+                    case 44: A44 = value; break;
+                    case 45: A45 = value; break;
+                    case 46: A46 = value; break;
+                    case 47: A47 = value; break;
+                    case 48: A48 = value; break;
+                    case 49: A49 = value; break;
+                    case 50: A50 = value; break;
+                    case 51: A51 = value; break;
+                    case 52: A52 = value; break;
+                    case 53: A53 = value; break;
+                    case 54: A54 = value; break;
+                    case 55: A55 = value; break;
+                    case 56: A56 = value; break;
+                    case 57: A57 = value; break;
+                    case 58: A58 = value; break;
+                    case 59: A59 = value; break;
+                    case 60: A60 = value; break;
+                    // case 61: A61 = value; break;
+                    // case 62: A62 = value; break;
+                    // case 63: A63 = value; break;
+                    // case 64: A64 = value; break;
+                    // case 65: A65 = value; break;
+                    // case 66: A66 = value; break;
+                    // case 67: A67 = value; break;
+                    // case 68: A68 = value; break;
+                    // case 69: A69 = value; break;
+                    // case 70: A70 = value; break;
+                    // case 71: A71 = value; break;
+                    // case 72: A72 = value; break;
+                    // case 73: A73 = value; break;
+                    // case 74: A74 = value; break;
+                    // case 75: A75 = value; break;
+                    // case 76: A76 = value; break;
+                    // case 77: A77 = value; break;
+                    // case 78: A78 = value; break;
+                    // case 79: A79 = value; break;
+                    // case 80: A80 = value; break;
+                    // case 81: A81 = value; break;
+                    // case 82: A82 = value; break;
+                    // case 83: A83 = value; break;
+                    // case 84: A84 = value; break;
+                    default: this[index % MaxSize] = value; break;
+                }
+            }
+        }
+    }
 }

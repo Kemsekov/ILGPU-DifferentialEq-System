@@ -57,11 +57,10 @@ foreach (var init in initialValues)
 // use DerivativeMethod.Euler,DerivativeMethod.ImprovedEuler or 
 // DerivativeMethod.RungeKutta methods to compute derivatives
 
-// using var gpuSolver = new GpuDiffEqSystemSolver(derivatives,DerivativeMethod.ImprovedEuler);
 var gpuSolver = new GpuDiffEqSystemSolver3D(derivatives, DerivativeMethod.RungeKutta, partial,constants);
 var cpuSolver = new CpuDiffEqSystemSolver3D(derivatives, DerivativeMethod.RungeKuttaCpu, partial,constants);
 
-var solver = gpuSolver;
+var solver = cpuSolver;
 // choose different versions of derivative computation algorithms
 // IDiffEqSolver solver = cpuSolver;//gpu solver;
 
@@ -79,7 +78,7 @@ foreach (var s in solutions.Take(n))
     counter++;
     if (counter % 100 == 0)
     {
-        var data = s.Values[0].ToCpu();
+        var data = s.Values[0];
         var plt = new Plot();
         var res = new double[xsize, ysize];
         

@@ -12,7 +12,7 @@ using Array1DView = ILGPU.Runtime.ArrayView1D<double, ILGPU.Stride1D.Dense>;
 using Array3D = ILGPU.Runtime.MemoryBuffer3D<double, ILGPU.Stride3D.DenseXY>;
 using static Library.DerivativeMethod;
 using GridDerivativeMethod=System.Action<ILGPU.Index1D, float, ILGPU.Runtime.ArrayView3D<double, ILGPU.Stride3D.DenseXY>, double, ILGPU.Runtime.ArrayView3D<double, ILGPU.Stride3D.DenseXY>>;
-using VariableGridUpdateKernelMethod = System.Action<ILGPU.Index2D, Library.Jagged3D_100, Library.Jagged3D_100, Library.Jagged3D_100,ILGPU.Runtime.ArrayView1D<double, ILGPU.Stride1D.Dense>, double, double, double, double, double, double>;
+using VariableGridUpdateKernelMethod = System.Action<ILGPU.Index2D, Library.Jagged3D_10, Library.Jagged3D_10, Library.Jagged3D_60,ILGPU.Runtime.ArrayView1D<double, ILGPU.Stride1D.Dense>, double, double, double, double, double, double>;
 namespace Library
 {
     public class GpuDiffEqSystemSolver3D : IDisposable
@@ -120,7 +120,7 @@ namespace Library
             }";
 
             var updateVariableMethod =
-            @"static void VariableGridUpdateKernel(ILGPU.Index2D point, Library.Jagged3D_100 p, Library.Jagged3D_100 v, Library.Jagged3D_100 derivsPlaced,ILGPU.Runtime.ArrayView1D<double, ILGPU.Stride1D.Dense> constants, double dt, double t, double h, double x0, double y0, double z0)
+            @"static void VariableGridUpdateKernel(ILGPU.Index2D point, Library.Jagged3D_10 p, Library.Jagged3D_10 v, Library.Jagged3D_60 derivsPlaced,ILGPU.Runtime.ArrayView1D<double, ILGPU.Stride1D.Dense> constants, double dt, double t, double h, double x0, double y0, double z0)
             {
             //x is grid x coordinate
             //i is variable index v0, v1 ...
@@ -157,11 +157,11 @@ namespace Library
             }";
             var code =
             @"
-            System.Action<ILGPU.Index2D, Library.Jagged3D_100, Library.Jagged3D_100, Library.Jagged3D_100,ILGPU.Runtime.ArrayView1D<double, ILGPU.Stride1D.Dense>, double, double, double, double, double, double>
+            System.Action<ILGPU.Index2D, Library.Jagged3D_10, Library.Jagged3D_10, Library.Jagged3D_60,ILGPU.Runtime.ArrayView1D<double, ILGPU.Stride1D.Dense>, double, double, double, double, double, double>
             Execute(ILGPU.Runtime.Accelerator accelerator)
             {
                 return ILGPU.Runtime.KernelLoaders
-                    .LoadAutoGroupedStreamKernel<ILGPU.Index2D, Library.Jagged3D_100, Library.Jagged3D_100, Library.Jagged3D_100,ILGPU.Runtime.ArrayView1D<double, ILGPU.Stride1D.Dense>, double, double, double, double, double, double>
+                    .LoadAutoGroupedStreamKernel<ILGPU.Index2D, Library.Jagged3D_10, Library.Jagged3D_10, Library.Jagged3D_60,ILGPU.Runtime.ArrayView1D<double, ILGPU.Stride1D.Dense>, double, double, double, double, double, double>
                         (accelerator,VariableGridUpdateKernel);
             }
             " + kernelCode + updateVariableMethod;
@@ -172,7 +172,7 @@ namespace Library
 
             loadedKernel = new Lazy<VariableGridUpdateKernelMethod>(() => DynamicCompilation.CompileFunction<Accelerator, VariableGridUpdateKernelMethod>(
                 code,
-                typeof(Index1D), typeof(ArrayView<int>), typeof(KernelLoaders), typeof(Jagged3D_100), typeof(Jagged3D_100))
+                typeof(Index1D), typeof(ArrayView<int>), typeof(KernelLoaders), typeof(Jagged3D_10), typeof(Jagged3D_60))
             (accelerator));
             gridDerivativeKernel = new Lazy<GridDerivativeMethod>(()=>accelerator.LoadAutoGroupedStreamKernel<ILGPU.Index1D, float, Array3DView, double, Array3DView>(GridDerivativeKernel));
             
@@ -217,7 +217,7 @@ namespace Library
             return new SolutionsGpu3D(_Kernel,derivatives,P,V,dt,t0,h,x0,y0,z0,constantsArr);
         }
 
-        private void _Kernel(double t, Jagged3D_100 p, Jagged3D_100 v,Array1DView constants, double dt, Dictionary<int, (string derivative, Array3D grid)[]> derivatives, double h, double x0, double y0, double z0)
+        private void _Kernel(double t, Jagged3D_10 p, Jagged3D_10 v,Array1DView constants, double dt, Dictionary<int, (string derivative, Array3D grid)[]> derivatives, double h, double x0, double y0, double z0)
         {
 
             //for each variable update it's grid
@@ -245,7 +245,7 @@ namespace Library
                     axisDeriv[partial.derivative] = partial.grid;
                 }
             }
-            loadedKernel.Value(new Index2D((int)size0, size), p, v, new Jagged3D_100(derivsPlaced),constants, dt, t, h, x0, y0, z0);
+            loadedKernel.Value(new Index2D((int)size0, size), p, v, new Jagged3D_60(derivsPlaced),constants, dt, t, h, x0, y0, z0);
         }
 
         delegate void GridDerivativeKernelMethod(Index1D i, Array3DView previous, double h, Array3DView grid);
