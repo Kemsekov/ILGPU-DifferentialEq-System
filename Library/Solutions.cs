@@ -5,7 +5,7 @@ using ILGPU.Runtime;
 using KernelType = System.Action<ILGPU.Index1D, double, double, ILGPU.ArrayView<double>, ILGPU.ArrayView<double>>;
 using CpuKernelType=System.Action<double, double[], double[], double>;
 using Cpu3DKernelType=System.Action<double, double[][,,], double[][,,],double[], double, System.Collections.Generic.Dictionary<int, (string derivative, double[,,] grid)[]>, double, double, double, double>;
-using Gpu3DKernelType=System.Action<double, Library.Jagged3D_10, Library.Jagged3D_10, ILGPU.Runtime.ArrayView1D<double, ILGPU.Stride1D.Dense>, double, System.Collections.Generic.Dictionary<int, (string derivative, ILGPU.Runtime.MemoryBuffer3D<double, ILGPU.Stride3D.DenseXY> grid)[]>, double, double, double, double>;
+using Gpu3DKernelType=System.Action<double, Library.Jagged3D_100, Library.Jagged3D_100, ILGPU.Runtime.ArrayView1D<double, ILGPU.Stride1D.Dense>, double, System.Collections.Generic.Dictionary<int, (string derivative, ILGPU.Runtime.MemoryBuffer3D<double, ILGPU.Stride3D.DenseXY> grid)[]>, double, double, double, double>;
 using Array3DView = ILGPU.Runtime.ArrayView3D<double, ILGPU.Stride3D.DenseXY>;
 using Array3D = ILGPU.Runtime.MemoryBuffer3D<double, ILGPU.Stride3D.DenseXY>;
 using Array1DView = ILGPU.Runtime.ArrayView1D<double, ILGPU.Stride1D.Dense>;
@@ -168,8 +168,8 @@ namespace Library
             yield return (P.Select(v=>v.View).ToArray(), t0);
 
 
-            var pJagged = new Jagged3D_10(P);
-            var vJagged = new Jagged3D_10(V);
+            var pJagged = new Jagged3D_100(P);
+            var vJagged = new Jagged3D_100(V);
             for (int i = 1; ; i++)
             {
                 var t = t0 + i * dt;

@@ -31,6 +31,7 @@ namespace Library
         {
             constants ??= new string[] { };
             _constantNameToId = constants.Select((i, v) => (i, v)).ToDictionary(v => v.i, v => v.v);
+            size = derivatives.Length;
             derivatives = derivatives.Select(d =>
             {
                 foreach (var c in _constantNameToId)
@@ -40,7 +41,6 @@ namespace Library
                 return d;
             }).ToArray();
             
-            size = derivatives.Length;
             var derivFunctions =
                 derivatives.Select((v, i) => $"double f{i}(double t,double[] v)=>{v};")
                 .ToArray();
